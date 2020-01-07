@@ -20,7 +20,7 @@ namespace Glitch
         public static void Main(string[] args)
         {
             args = args == null || args.Length == 0
-                ? new[] {"help"}
+                ? new[] {""}
                 : args.Select(s => s.ToLower().TrimStart('-', '/', '\\')).ToArray();
             List<Action> payloads = new Action[]
             {
@@ -44,13 +44,17 @@ namespace Glitch
                         string.Join(Environment.NewLine, payloads.Select(s => s.GetPayloadName())));
                     break;
                 case "full":
-                    Console.WriteLine("Using payloads:");
-                    payloads.Where(s => payloads.Any(a => a.GetPayloadName() == s.GetPayloadName())).ToList().ForEach(
-                        s => { Console.WriteLine($"- {s.GetPayloadName()}"); });
+                    payloads.ForEach(s => new Thread(() => s()).Start());
                     ShowKill();
                     break;
                 case "run":
-                    payloads.ForEach(s => new Thread(() => s()).Start());
+                    Console.WriteLine("Using payloads:");
+                    payloads.Where(s => args.Skip(1).Any(a => s.GetPayloadName().ToLower() == a)).ToList().ForEach(
+                        s =>
+                        {
+                            Console.WriteLine($"- {s.GetPayloadName()}");
+                            new Thread(() => s()).Start();
+                        });
                     ShowKill();
                     break;
                 default:
@@ -135,8 +139,7 @@ Commands:
                         .Resize(size34)
                         .Save(ms);
                     ms.Position = 0;
-                    using Drawer drawerBuffered = ScreenMan.GetDrawer();
-                    drawerBuffered.Graphics.DrawImageUnscaled(tmp, Point.Empty);
+                    using Drawer drawerBuffered = ScreenMan.GetDrawer(false);
                     drawerBuffered.Graphics.DrawImageUnscaled(Image.FromStream(ms), point34);
                 }
                 catch (Exception e)
@@ -164,13 +167,13 @@ Commands:
                 }
         }
 
-        private static void PayloadKeyboard() //TODO: Fix @, up-chars and numbers only
+        private static void PayloadKeyboard()
         {
             while (true)
                 try
                 {
                     Thread.Sleep(1000);
-                    SendKeys.SendWait($"{(char) Rnd.Next(48, 90 + 1)}");
+                    SendKeys.SendWait($"{(char) Rnd.Next(48, 123)}");
                 }
                 catch (Exception e)
                 {
