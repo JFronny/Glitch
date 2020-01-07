@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -18,26 +19,39 @@ namespace Glitch
 
         public static void Main(string[] args)
         {
-            args = args == null || args.Length == 0 ? new[] {"help"} : args.Select(s => s.TrimStart('-', '/', '\\')).ToArray();
-            new Thread(PayloadTunnel).Start();
-            new Thread(PayloadInvert).Start();
-            new Thread(PayloadCursor).Start();
-            new Thread(PayloadReverseText).Start();
-            new Thread(PayloadKeyboard).Start();
-            new Thread(PayloadSound).Start();
-            new Thread(PayloadExecute).Start();
-            new Thread(PayloadMessageBox).Start();
-            new Thread(PayloadDrawWarnings).Start();
-            new Thread(PayloadDrawErrors).Start();
-            new Thread(PayloadCrazyBus).Start();
-            new Thread(PayloadScreenGlitches).Start();
+            args = args == null || args.Length == 0
+                ? new[] {"help"}
+                : args.Select(s => s.ToLower().TrimStart('-', '/', '\\')).ToArray();
+            List<Action> payloads = new Action[]
+            {
+                PayloadCrazyBus,
+                PayloadCursor,
+                PayloadDrawErrors,
+                PayloadDrawWarnings,
+                PayloadExecute,
+                PayloadInvert,
+                PayloadKeyboard,
+                PayloadMessageBox,
+                PayloadReverseText,
+                PayloadScreenGlitches,
+                PayloadSound,
+                PayloadTunnel
+            }.OrderBy(s => s.GetPayloadName()).ToList();
             switch (args[0])
             {
                 case "list":
+                    Console.WriteLine(
+                        string.Join(Environment.NewLine, payloads.Select(s => s.GetPayloadName())));
                     break;
                 case "full":
+                    Console.WriteLine("Using payloads:");
+                    payloads.Where(s => payloads.Any(a => a.GetPayloadName() == s.GetPayloadName())).ToList().ForEach(
+                        s => { Console.WriteLine($"- {s.GetPayloadName()}"); });
+                    ShowKill();
                     break;
                 case "run":
+                    payloads.ForEach(s => new Thread(() => s()).Start());
+                    ShowKill();
                     break;
                 default:
                     Console.WriteLine("Invalid operator");
@@ -49,19 +63,22 @@ namespace Glitch
             }
         }
 
+        private static void ShowKill()
+        {
+            Console.WriteLine("Press [ENTER] to kill");
+            Console.ReadLine();
+            Environment.Exit(0);
+        }
+
         private static void ShowHelp()
         {
             Console.WriteLine(@"CC24 - Glitch - an (incomplete) implementation of Leurak's MEMZ in C#
 Usage: Glitch <command> [parameters]
 Commands:
--   help
-    Displays this message
--   list
-    Lists all payloads
--   full
-    Runs all payloads
--   run
-    Run only the payloads specified in parameters");
+-   help: Displays this message
+-   list: Lists all payloads
+-   full: Runs all payloads
+-   run:  Run only the payloads specified in parameters");
         }
 
         private static void PayloadCursor()
@@ -276,7 +293,8 @@ Commands:
                         .Save(ms);
                     ms.Position = 0;
                     using Drawer drawerBuffered = ScreenMan.GetDrawer(false);
-                    drawerBuffered.Graphics.DrawImageUnscaled(Image.FromStream(ms), new Point(Rnd.Next(xMax), Rnd.Next(yMax)));
+                    drawerBuffered.Graphics.DrawImageUnscaled(Image.FromStream(ms),
+                        new Point(Rnd.Next(xMax), Rnd.Next(yMax)));
                 }
                 catch (Exception e)
                 {

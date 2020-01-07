@@ -13,7 +13,7 @@ namespace Glitch
     {
         public Image ProcessImage(ImageFactory factory)
         {
-            Bitmap newImage = null;
+            Bitmap? newImage = null;
             Image image = factory.Image;
             try
             {
@@ -51,7 +51,7 @@ namespace Glitch
             return image;
         }
 
-        public dynamic DynamicParameter { get; set; }
-        public Dictionary<string, string> Settings { get; set; }
+        public dynamic? DynamicParameter { get; set; }
+        public Dictionary<string, string>? Settings { get; set; }
     }
 }

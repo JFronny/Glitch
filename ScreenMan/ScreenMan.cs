@@ -36,7 +36,7 @@ namespace ScreenLib
         public static Drawer GetDrawer(bool buffer = true)
         {
             IntPtr ptr = W32.GetDC(IntPtr.Zero);
-            return buffer ? (Drawer)new DCDrawer_Buffered(ptr) : new DCDrawer_Unbuffered(ptr);
+            return buffer ? (Drawer) new DCDrawer_Buffered(ptr) : new DCDrawer_Unbuffered(ptr);
         }
 
         public static Rectangle GetBounds() => Screen.PrimaryScreen.Bounds;

@@ -56,10 +56,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ImageProcessor\ImageProcessing.csproj">
-      <Project>{008efa6f-1d45-4230-bc68-0e6926ba028f}</Project>
-      <Name>ImageProcessing</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ScreenMan\ScreenLib.csproj">
       <Project>{EC133628-E9B9-4EF1-9EBE-7663CAF6B946}</Project>
       <Name>ScreenLib</Name>

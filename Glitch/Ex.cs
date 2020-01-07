@@ -1,4 +1,5 @@
-﻿using ImageProcessor;
+﻿using System;
+using ImageProcessor;
 
 namespace Glitch
 {
@@ -13,5 +14,7 @@ namespace Glitch
             }
             return factory;
         }
+
+        public static string GetPayloadName(this Action payload) => payload.Method.Name.Remove(0, 7);
     }
 }

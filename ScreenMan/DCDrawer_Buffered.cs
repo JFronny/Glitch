@@ -8,14 +8,12 @@ namespace ScreenLib
     {
         Graphics Graphics { get; }
     }
-    
+
     public class DCDrawer_Buffered : Drawer
     {
-        public Graphics Graphics { get; }
         private readonly BufferedGraphics buffer;
         private readonly IntPtr ptr;
         private readonly Graphics srcGraphics;
-        private Drawer _drawerImplementation;
 
         public DCDrawer_Buffered(IntPtr ptr)
         {
@@ -24,6 +22,8 @@ namespace ScreenLib
             buffer = BufferedGraphicsManager.Current.Allocate(srcGraphics, Screen.PrimaryScreen.Bounds);
             Graphics = buffer.Graphics;
         }
+
+        public Graphics Graphics { get; }
 
         public void Dispose()
         {
@@ -34,10 +34,9 @@ namespace ScreenLib
             W32.ReleaseDC(IntPtr.Zero, ptr);
         }
     }
-    
+
     public class DCDrawer_Unbuffered : Drawer
     {
-        public Graphics Graphics { get; }
         private readonly IntPtr ptr;
 
         public DCDrawer_Unbuffered(IntPtr ptr)
@@ -45,6 +44,8 @@ namespace ScreenLib
             this.ptr = ptr;
             Graphics = Graphics.FromHdc(ptr);
         }
+
+        public Graphics Graphics { get; }
 
         public void Dispose()
         {
