@@ -1,4 +1,4 @@
-﻿namespace Glitch
+﻿namespace GlitchPayloads
 {
     public static class Sites
     {

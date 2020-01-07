@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DXOS-Test", "DXOS-Test\DXOS-Test.csproj", "{57627C5E-CBE9-4F36-9F8F-52ADFD87131A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenLib", "ScreenMan\ScreenLib.csproj", "{EC133628-E9B9-4EF1-9EBE-7663CAF6B946}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PiXl", "PiXl\PiXl.csproj", "{49F5557F-DA75-4B40-8AF3-77F1B7F404C9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Glitch", "Glitch\Glitch.csproj", "{5D3AD59E-37D8-4CB2-B38D-97C26BAD29D7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlitchPayloads", "GlitchPayloads\GlitchPayloads.csproj", "{9668A1F9-CF2E-4497-AB0D-DC96C1DE475D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{57627C5E-CBE9-4F36-9F8F-52ADFD87131A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{57627C5E-CBE9-4F36-9F8F-52ADFD87131A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{57627C5E-CBE9-4F36-9F8F-52ADFD87131A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{57627C5E-CBE9-4F36-9F8F-52ADFD87131A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EC133628-E9B9-4EF1-9EBE-7663CAF6B946}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EC133628-E9B9-4EF1-9EBE-7663CAF6B946}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC133628-E9B9-4EF1-9EBE-7663CAF6B946}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -33,6 +29,10 @@ Global
 		{5D3AD59E-37D8-4CB2-B38D-97C26BAD29D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D3AD59E-37D8-4CB2-B38D-97C26BAD29D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D3AD59E-37D8-4CB2-B38D-97C26BAD29D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9668A1F9-CF2E-4497-AB0D-DC96C1DE475D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9668A1F9-CF2E-4497-AB0D-DC96C1DE475D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9668A1F9-CF2E-4497-AB0D-DC96C1DE475D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9668A1F9-CF2E-4497-AB0D-DC96C1DE475D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

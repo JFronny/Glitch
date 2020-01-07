@@ -2,7 +2,7 @@
 using System.IO;
 using System.Media;
 
-namespace Glitch
+namespace GlitchPayloads
 {
     public class Beep
     {
