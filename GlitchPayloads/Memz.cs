@@ -12,240 +12,144 @@ using ScreenLib;
 
 namespace GlitchPayloads
 {
-    [Payload]
+    [PayloadClass]
     public static class Memz
     {
-        [Payload]
+        private static Rectangle _bounds = ScreenMan.GetBounds();
+        private static readonly Icon ErrorIcon = SystemIcons.Error;
+        private static Size _halfErrorIcon = new Size(ErrorIcon.Width / 2, ErrorIcon.Height / 2);
+        private static readonly Icon WarningIcon = SystemIcons.Warning;
+        private static readonly int XMaxWarning = _bounds.Width - WarningIcon.Width;
+        private static readonly int YMaxWarning = _bounds.Height - WarningIcon.Height;
+
+        private static readonly string[] Sites =
+            GlitchPayloads.Sites.SiteString.Split(new[] {"\n", "\r"}, StringSplitOptions.RemoveEmptyEntries);
+
+        private static string _siteChoice = "";
+        private static readonly Size Size34 = new Size((_bounds.Width / 4) * 3, (_bounds.Height / 4) * 3);
+        private static readonly Point Point34 = new Point(_bounds.Width / 8, _bounds.Height / 8);
+
+        [Payload(true, 50, 200)]
         public static void PayloadCursor()
         {
-            while (true)
-                try
-                {
-                    Thread.Sleep(200);
-                    Point tmp = Cursor.Position;
-                    tmp.X += Common.Rnd.Next(-2, 3);
-                    tmp.Y += Common.Rnd.Next(-2, 3);
-                    Cursor.Position = tmp;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                }
+            Point tmp = Cursor.Position;
+            tmp.X += Common.Rnd.Next(-2, 3);
+            tmp.Y += Common.Rnd.Next(-2, 3);
+            Cursor.Position = tmp;
         }
 
-        [Payload]
+        [Payload(true, 150, 4000)]
         public static void PayloadInvert()
         {
-            while (true)
-                try
-                {
-                    Thread.Sleep(1000);
-                    using MemoryStream ms = new MemoryStream();
-                    using ImageFactory imageFactory = new ImageFactory();
-                    imageFactory.Load(ScreenMan.CaptureScreen())
-                        .InvertColor()
-                        .Save(ms);
-                    ms.Position = 0;
-                    using Drawer drawerBuffered = ScreenMan.GetDrawer();
-                    drawerBuffered.Graphics.DrawImageUnscaled(Image.FromStream(ms), Point.Empty);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                }
+            using MemoryStream ms = new MemoryStream();
+            using ImageFactory imageFactory = new ImageFactory();
+            imageFactory.Load(ScreenMan.CaptureScreen())
+                .InvertColor()
+                .Save(ms);
+            ms.Position = 0;
+            using DCDrawer drawerBuffered = ScreenMan.GetDrawer();
+            drawerBuffered.Graphics.DrawImageUnscaled(Image.FromStream(ms), Point.Empty);
         }
 
-        [Payload]
+        [Payload(true, 280, 4000)]
         public static void PayloadTunnel()
         {
-            Rectangle bounds = ScreenMan.GetBounds();
-            Size size34 = new Size((bounds.Width / 4) * 3, (bounds.Height / 4) * 3);
-            Point point34 = new Point(bounds.Width / 8, bounds.Height / 8);
-            while (true)
-                try
-                {
-                    Thread.Sleep(1000);
-                    using MemoryStream ms = new MemoryStream();
-                    using ImageFactory imageFactory = new ImageFactory();
-                    Image tmp = ScreenMan.CaptureScreen();
-                    imageFactory.Load(tmp)
-                        .Resize(size34)
-                        .Save(ms);
-                    ms.Position = 0;
-                    using Drawer dcdrawer = ScreenMan.GetDrawer();
-                    dcdrawer.Graphics.DrawImageUnscaled(tmp, Point.Empty);
-                    dcdrawer.Graphics.DrawImageUnscaled(Image.FromStream(ms), point34);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                }
+            using MemoryStream ms = new MemoryStream();
+            using ImageFactory imageFactory = new ImageFactory();
+            Image tmp = ScreenMan.CaptureScreen();
+            imageFactory.Load(tmp)
+                .Resize(Size34)
+                .Save(ms);
+            ms.Position = 0;
+            using DCDrawer dcdrawer = ScreenMan.GetDrawer();
+            dcdrawer.Graphics.DrawImageUnscaled(tmp, Point.Empty);
+            dcdrawer.Graphics.DrawImageUnscaled(Image.FromStream(ms), Point34);
         }
 
-        [Payload]
+        [Payload(false, 220, 4000)]
         public static void PayloadReverseText()
         {
-            while (true)
-                try
-                {
-                    Thread.Sleep(1000);
-                    foreach (Wnd32 wnd in Wnd32.getAll())
-                    {
-                        string? tmp = wnd.title;
-                        if (!string.IsNullOrWhiteSpace(tmp))
-                            wnd.title = string.Join("", tmp.ToCharArray().Reverse());
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                }
+            foreach (Wnd32 wnd in Wnd32.getAll())
+            {
+                string? tmp = wnd.title;
+                if (!string.IsNullOrWhiteSpace(tmp))
+                    wnd.title = string.Join("", tmp.ToCharArray().Reverse());
+            }
         }
 
-        [Payload]
+        [Payload(false, 70, 4000)]
         public static void PayloadKeyboard()
         {
-            while (true)
-                try
-                {
-                    Thread.Sleep(1000);
-                    SendKeys.SendWait($"{(char) Common.Rnd.Next(48, 123)}");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                }
+            SendKeys.SendWait($"{(char) Common.Rnd.Next(48, 123)}");
         }
 
-        [Payload]
+        [Payload(true, 120, 4000)]
         public static void PayloadSound()
         {
             SystemSound[] sounds = typeof(SystemSounds).GetProperties()
                 .Select(s => (SystemSound) s.GetValue(null, null)).ToArray();
-            while (true)
-                try
-                {
-                    Thread.Sleep(1000);
-                    sounds[Common.Rnd.Next(sounds.Length)].Play();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                }
+
+            sounds[Common.Rnd.Next(sounds.Length)].Play();
         }
 
-        [Payload]
+        [Payload(false, 30, 4000)]
         public static void PayloadExecute()
         {
-            string[] sites = Sites.SiteString.Split(new[] {"\n", "\r"}, StringSplitOptions.RemoveEmptyEntries);
-            string choice = "";
-            while (true)
-                try
-                {
-                    Thread.Sleep(2000);
-                    choice = sites[Common.Rnd.Next(sites.Length)];
-                    Process.Start(choice);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"{e}\nChoice was: {choice}");
-                }
+            try
+            {
+                _siteChoice = Sites[Common.Rnd.Next(Sites.Length)];
+                Process.Start(_siteChoice);
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Choice was: {_siteChoice}", e);
+            }
         }
 
-        [Payload]
+        [Payload(true, 170, 12000)]
         public static void PayloadMessageBox()
         {
-            while (true)
-                try
-                {
-                    Thread.Sleep(3000);
-                    new Thread(() => MessageBox.Show("Still using this computer?", "lol", MessageBoxButtons.OK,
-                        MessageBoxIcon.Warning)).Start();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                }
+            new Thread(() => MessageBox.Show("Still using this computer?", "lol", MessageBoxButtons.OK,
+                MessageBoxIcon.Warning)).Start();
         }
 
-        [Payload]
+        [Payload(true, 180, 4000)]
         public static void PayloadDrawWarnings()
         {
-            Rectangle bounds = ScreenMan.GetBounds();
-            Icon icon = SystemIcons.Warning;
-            int xMax = bounds.Width - icon.Width;
-            int yMax = bounds.Height - icon.Height;
-            while (true)
-                try
-                {
-                    Thread.Sleep(1000);
-                    using Drawer drawerBuffered = ScreenMan.GetDrawer(false);
-                    drawerBuffered.Graphics.DrawIcon(icon, Common.Rnd.Next(xMax + 1), Common.Rnd.Next(yMax + 1));
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                }
+            using DCDrawer drawerBuffered = ScreenMan.GetDrawer(false);
+            drawerBuffered.Graphics.DrawIcon(WarningIcon, Common.Rnd.Next(XMaxWarning + 1),
+                Common.Rnd.Next(YMaxWarning + 1));
         }
 
-        [Payload]
+        [Payload(true, 180, 400)]
         public static void PayloadDrawErrors()
         {
-            Icon icon = SystemIcons.Error;
-            Size halfIcon = new Size(icon.Width / 2, icon.Height / 2);
-            while (true)
-                try
-                {
-                    Thread.Sleep(100);
-                    Point tmp = Cursor.Position;
-                    using Drawer drawerBuffered = ScreenMan.GetDrawer(false);
-                    drawerBuffered.Graphics.DrawIcon(icon, tmp.X - halfIcon.Width, tmp.Y - halfIcon.Height);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                }
+            Point tmp = Cursor.Position;
+            using DCDrawer drawerBuffered = ScreenMan.GetDrawer(false);
+            drawerBuffered.Graphics.DrawIcon(ErrorIcon, tmp.X - _halfErrorIcon.Width, tmp.Y - _halfErrorIcon.Height);
         }
 
-        [Payload]
+        [Payload(true, 305, 800)]
         public static void PayloadCrazyBus()
         {
-            while (true)
-                try
-                {
-                    Beep.BeepBeep(1000, Common.Rnd.Next(1000, 6000), 200);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                }
+            Beep.BeepBeep(1000, Common.Rnd.Next(1000, 6000), (int) (800 * Common.DelayMultiplier));
         }
 
-        [Payload]
+        [Payload(true, 295, 4000)]
         public static void PayloadScreenGlitches()
         {
-            Rectangle bounds = ScreenMan.GetBounds();
-            while (true)
-                try
-                {
-                    Thread.Sleep(1000);
-                    Size objSize = new Size(Common.Rnd.Next(100, 500), Common.Rnd.Next(100, 500));
-                    int xMax = bounds.Width - objSize.Width;
-                    int yMax = bounds.Height - objSize.Height;
-                    using MemoryStream ms = new MemoryStream();
-                    using ImageFactory imageFactory = new ImageFactory();
-                    imageFactory.Load(ScreenMan.CaptureScreen())
-                        .Crop(new Rectangle(new Point(Common.Rnd.Next(xMax), Common.Rnd.Next(yMax)), objSize))
-                        .Save(ms);
-                    ms.Position = 0;
-                    using Drawer drawerBuffered = ScreenMan.GetDrawer(false);
-                    drawerBuffered.Graphics.DrawImageUnscaled(Image.FromStream(ms),
-                        new Point(Common.Rnd.Next(xMax), Common.Rnd.Next(yMax)));
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                }
+            Size objSize = new Size(Common.Rnd.Next(100, 500), Common.Rnd.Next(100, 500));
+            int xMax = _bounds.Width - objSize.Width;
+            int yMax = _bounds.Height - objSize.Height;
+            using MemoryStream ms = new MemoryStream();
+            using ImageFactory imageFactory = new ImageFactory();
+            imageFactory.Load(ScreenMan.CaptureScreen())
+                .Crop(new Rectangle(new Point(Common.Rnd.Next(xMax), Common.Rnd.Next(yMax)), objSize))
+                .Save(ms);
+            ms.Position = 0;
+            using DCDrawer drawerBuffered = ScreenMan.GetDrawer(false);
+            drawerBuffered.Graphics.DrawImageUnscaled(Image.FromStream(ms),
+                new Point(Common.Rnd.Next(xMax), Common.Rnd.Next(yMax)));
         }
     }
 }

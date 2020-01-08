@@ -57,6 +57,7 @@
     <Compile Include="Ex.cs" />
     <Compile Include="PayloadAttribute.cs" />
     <Compile Include="Memz.cs" />
+    <Compile Include="PayloadClassAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sites.cs" />
   </ItemGroup>

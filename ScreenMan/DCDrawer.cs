@@ -4,12 +4,12 @@ using System.Windows.Forms;
 
 namespace ScreenLib
 {
-    public interface Drawer : IDisposable
+    public interface DCDrawer : IDisposable
     {
         Graphics Graphics { get; }
     }
 
-    public class DCDrawer_Buffered : Drawer
+    public class DCDrawer_Buffered : DCDrawer
     {
         private readonly BufferedGraphics buffer;
         private readonly IntPtr ptr;
@@ -35,7 +35,7 @@ namespace ScreenLib
         }
     }
 
-    public class DCDrawer_Unbuffered : Drawer
+    public class DCDrawer_Unbuffered : DCDrawer
     {
         private readonly IntPtr ptr;
 

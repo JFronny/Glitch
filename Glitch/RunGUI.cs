@@ -23,11 +23,11 @@ namespace Glitch
             {
                 Button btn = new Button
                 {
-                    Text = s.GetPayloadName(),
+                    Text = s.Item1.GetPayloadName(),
                     Width = 200,
                     Height = 30,
                     BackColor = Color.FromKnownColor(KnownColor.Control),
-                    Tag = new object[] {s, new Thread(() => s.Invoke(null, new object[0])), false}
+                    Tag = new object[] {s, Program.GetRunner(s.Item1, s.Item2), false}
                 };
                 payloadButtons.Add(btn);
                 btnPanel.Controls.Add(btn);
@@ -56,12 +56,12 @@ namespace Glitch
         {
             Button btn = (Button) sender;
             object[] args = (object[]) btn.Tag;
-            MethodInfo s = (MethodInfo) args[0];
+            Tuple<MethodInfo, PayloadAttribute> s = (Tuple<MethodInfo, PayloadAttribute>) args[0];
             Thread th = (Thread) args[1];
             if (th.IsAlive)
             {
                 th.Abort();
-                args[1] = new Thread(() => s.Invoke(null, new object[0]));
+                args[1] = Program.GetRunner(s.Item1, s.Item2);
             }
             if ((bool) args[2])
             {

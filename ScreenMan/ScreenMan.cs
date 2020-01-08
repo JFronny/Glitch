@@ -27,16 +27,16 @@ namespace ScreenLib
 
         public static void Draw(Image img)
         {
-            using (Drawer drawerBuffered = GetDrawer())
+            using (DCDrawer drawerBuffered = GetDrawer())
             {
                 drawerBuffered.Graphics.DrawImage(img, GetBounds());
             }
         }
 
-        public static Drawer GetDrawer(bool buffer = true)
+        public static DCDrawer GetDrawer(bool buffer = true)
         {
             IntPtr ptr = W32.GetDC(IntPtr.Zero);
-            return buffer ? (Drawer) new DCDrawer_Buffered(ptr) : new DCDrawer_Unbuffered(ptr);
+            return buffer ? (DCDrawer) new DCDrawer_Buffered(ptr) : new DCDrawer_Unbuffered(ptr);
         }
 
         public static Rectangle GetBounds() => Screen.PrimaryScreen.Bounds;
