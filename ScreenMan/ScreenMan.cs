@@ -40,5 +40,7 @@ namespace ScreenLib
         }
 
         public static Rectangle GetBounds() => Screen.PrimaryScreen.Bounds;
+
+        public static void Refresh() => W32.SHChangeNotify(0x8000000, 0x1000, IntPtr.Zero, IntPtr.Zero);
     }
 }

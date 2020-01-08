@@ -4,8 +4,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Windows.Forms;
 using CC_Functions.W32;
 using GlitchPayloads;
+
 //#define Watch_Dogs
 
 namespace Glitch
@@ -14,6 +16,7 @@ namespace Glitch
     {
         private static readonly Random Rnd = new Random();
         public static List<MethodInfo>? payloads;
+
         public static void Main(string[] args)
         {
 #if Watch_Dogs
@@ -24,16 +27,20 @@ namespace Glitch
             }
 #endif
             args = args == null || args.Length == 0
-                ? new[] {""}
+                ? new[] {"form"}
                 : args.Select(s => s.ToLower().TrimStart('-', '/', '\\')).ToArray();
             payloads = Assembly.GetAssembly(typeof(PayloadAttribute)).GetTypes()
                 .Where(s => s.IsClass &&
                             s.GetCustomAttributes(false).Any(a => a is PayloadAttribute))
-                .SelectMany(s => s.GetMethods()).Where(s => !s.GetParameters().Any(q => true) && s.GetCustomAttributes(false).Any(a => a is PayloadAttribute))
+                .SelectMany(s => s.GetMethods()).Where(s =>
+                    !s.GetParameters().Any(q => true) && s.GetCustomAttributes(false).Any(a => a is PayloadAttribute))
                 .OrderBy(s => s.GetPayloadName())
                 .ToList();
             switch (args[0])
             {
+                case "form":
+                    Application.Run(new RunGUI());
+                    break;
                 case "list":
                     Console.WriteLine(
                         string.Join(Environment.NewLine, payloads.Select(s => s.GetPayloadName())));
@@ -81,6 +88,7 @@ namespace Glitch
 Usage: Glitch <command> [parameters]
 
 Commands:
+-   form: Shows a GUI to customize payloads (Memz Clean). Default
 -   help: Displays this message
 -   list: Lists all payloads
 -   full: Runs all payloads. This is the only option that includes WatchDogs
@@ -93,6 +101,5 @@ Commands:
 }
 
 //TODO: Funciton to build custom payload collections
-//TODO: Forms-builds
 //TODO: Show notepad
 //TODO: Test WD

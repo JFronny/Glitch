@@ -72,8 +72,9 @@ namespace GlitchPayloads
                         .Resize(size34)
                         .Save(ms);
                     ms.Position = 0;
-                    using Drawer drawerBuffered = ScreenMan.GetDrawer(false);
-                    drawerBuffered.Graphics.DrawImageUnscaled(Image.FromStream(ms), point34);
+                    using Drawer dcdrawer = ScreenMan.GetDrawer();
+                    dcdrawer.Graphics.DrawImageUnscaled(tmp, Point.Empty);
+                    dcdrawer.Graphics.DrawImageUnscaled(Image.FromStream(ms), point34);
                 }
                 catch (Exception e)
                 {

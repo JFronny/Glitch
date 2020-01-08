@@ -41,6 +41,9 @@ namespace ScreenLib
         [DllImport("user32.dll")]
         public static extern IntPtr GetWindowRect(IntPtr hWnd, ref RECT rect);
 
+        [DllImport("Shell32.dll")]
+        public static extern int SHChangeNotify(int eventId, int flags, IntPtr item1, IntPtr item2);
+
         [StructLayout(LayoutKind.Sequential)]
         public struct RECT
         {
