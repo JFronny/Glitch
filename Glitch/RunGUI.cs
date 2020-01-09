@@ -27,7 +27,7 @@ namespace Glitch
                     Width = 200,
                     Height = 30,
                     BackColor = Color.FromKnownColor(KnownColor.Control),
-                    Tag = new object[] {s, Program.GetRunner(s.Item1, s.Item2), false}
+                    Tag = new object[] {s, GetFRunner(s.Item1, s.Item2), false}
                 };
                 payloadButtons.Add(btn);
                 btnPanel.Controls.Add(btn);
@@ -40,14 +40,8 @@ namespace Glitch
                     {
                         payloadsEnabled = !payloadsEnabled;
                         Text =
-                            $"CC24 Glitch - Payloads are {(payloadsEnabled ? "enabled" : "disabled")}. Press LShift+Esc to toggle";
-                        payloadButtons.ForEach(btn =>
-                        {
-                            object[] tmp = (object[]) btn.Tag;
-                            tmp[2] = !(bool) tmp[2];
-                            btn.Tag = tmp;
-                            PayloadButtonClick(btn, new EventArgs());
-                        });
+                            $"CC24 Glitch - Payloads are {(payloadsEnabled ? "enabled" : "disabled")}. " +
+                            "Press LShift+Esc to toggle";
                     }
             };
         }
@@ -61,7 +55,7 @@ namespace Glitch
             if (th.IsAlive)
             {
                 th.Abort();
-                args[1] = Program.GetRunner(s.Item1, s.Item2);
+                args[1] = GetFRunner(s.Item1, s.Item2);
             }
             if ((bool) args[2])
             {
@@ -71,12 +65,26 @@ namespace Glitch
             }
             else
             {
-                if (payloadsEnabled)
-                    th.Start();
+                th.Start();
                 args[2] = true;
                 btn.BackColor = Color.FromKnownColor(KnownColor.Highlight);
             }
             btn.Tag = args;
+        }
+
+        public Thread GetFRunner(MethodInfo method, PayloadAttribute data)
+        {
+            return new Thread(() =>
+            {
+                while (true)
+                {
+                    if (payloadsEnabled)
+                        method.Invoke(null, new object[0]);
+                    if (IsDisposed)
+                        return;
+                    Thread.Sleep(Math.Max(data.DefaultDelay / 4, 50));
+                }
+            });
         }
     }
 }

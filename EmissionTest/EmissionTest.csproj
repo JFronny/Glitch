@@ -4,15 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5D3AD59E-37D8-4CB2-B38D-97C26BAD29D7}</ProjectGuid>
+    <ProjectGuid>{F3D7D306-3833-45AC-B2CE-E5AE4221D411}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Glitch</RootNamespace>
-    <AssemblyName>Glitch</AssemblyName>
+    <RootNamespace>EmissionTest</RootNamespace>
+    <AssemblyName>EmissionTest</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <LangVersion>8</LangVersion>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -33,38 +31,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>Azael_Pixel.ico</ApplicationIcon>
-  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CC-Functions.W32, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\CC-Functions.W32.1.0.4\lib\CC-Functions.W32.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="ImageProcessor, Version=2.8.0.152, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\ImageProcessor.2.8.0\lib\net452\ImageProcessor.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PayloadBundleBuilder.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RunGUI.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="RunGUI.Designer.cs">
-      <DependentUpon>RunGUI.cs</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GlitchPayloads\GlitchPayloads.csproj">
@@ -75,18 +50,6 @@
       <Project>{af2932e2-1571-4aba-9f86-72ec54b390b1}</Project>
       <Name>Misc</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ScreenMan\ScreenLib.csproj">
-      <Project>{ec133628-e9b9-4ef1-9ebe-7663caf6b946}</Project>
-      <Name>ScreenLib</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="RunGUI.resx">
-      <DependentUpon>RunGUI.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Azael_Pixel.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

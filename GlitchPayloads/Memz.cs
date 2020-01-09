@@ -113,7 +113,7 @@ namespace GlitchPayloads
                 MessageBoxIcon.Warning)).Start();
         }
 
-        [Payload(true, 180, 4000)]
+        [Payload(true, 180, 800)]
         public static void PayloadDrawWarnings()
         {
             using DCDrawer drawerBuffered = ScreenMan.GetDrawer(false);
