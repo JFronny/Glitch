@@ -130,5 +130,3 @@ namespace Glitch
 }
 
 //TODO: Test BSOD
-//TODO: Remove EmissionTest
-//TODO: Fix incorrect emission (code is OK but doesn't work)

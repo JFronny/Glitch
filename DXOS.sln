@@ -19,8 +19,6 @@ EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Misc", "Misc\Misc.csproj", "{AF2932E2-1571-4ABA-9F86-72EC54B390B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmissionTest", "EmissionTest\EmissionTest.csproj", "{F3D7D306-3833-45AC-B2CE-E5AE4221D411}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,10 +45,6 @@ Global
 		{AF2932E2-1571-4ABA-9F86-72EC54B390B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF2932E2-1571-4ABA-9F86-72EC54B390B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF2932E2-1571-4ABA-9F86-72EC54B390B1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F3D7D306-3833-45AC-B2CE-E5AE4221D411}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F3D7D306-3833-45AC-B2CE-E5AE4221D411}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F3D7D306-3833-45AC-B2CE-E5AE4221D411}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F3D7D306-3833-45AC-B2CE-E5AE4221D411}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

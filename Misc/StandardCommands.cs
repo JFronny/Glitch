@@ -10,14 +10,14 @@ namespace Misc
 {
     public static class StandardCommands
     {
-        public static Thread GetRunner(MethodInfo method, int RunAfter, int DefaultDelay) =>
+        public static Thread GetRunner(MethodInfo method, int runAfter, int defaultDelay) =>
             new Thread(() =>
             {
-                while (RunAfter < Common.TimePassed) Thread.Sleep(1000);
+                while (runAfter > Common.TimePassed) Thread.Sleep(1000);
                 while (true)
                 {
                     method.Invoke(null, new object[0]);
-                    Thread.Sleep(Math.Max((int) (DefaultDelay * Common.DelayMultiplier), 50));
+                    Thread.Sleep(Math.Max((int) (defaultDelay * Common.DelayMultiplier), 50));
                 }
             });
 
@@ -45,7 +45,7 @@ namespace Misc
             {
                 Thread.Sleep(1000);
                 Common.TimePassed++;
-                Common.DelayMultiplier = Math.Max(240 / Common.TimePassed, float.Epsilon);
+                Common.DelayMultiplier = Math.Max(2 / Common.TimePassed, float.Epsilon);
             }).Start();
         }
 
