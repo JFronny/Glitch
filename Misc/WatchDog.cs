@@ -46,7 +46,7 @@ Well, hello there. I don't believe we've been properly introduced. I'm Bonzi!
         public static void Run()
         {
             Random rnd = new Random();
-            Wnd32.fromHandle(Process.GetCurrentProcess().MainWindowHandle).shown = false;
+            Process.GetCurrentProcess().GetMainWindow().Shown = false;
             Thread.Sleep(5000);
             string modN = Path.GetFileNameWithoutExtension(Process.GetCurrentProcess().MainModule.ModuleName);
             while (true)

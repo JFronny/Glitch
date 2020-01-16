@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenLib", "ScreenMan\ScreenLib.csproj", "{EC133628-E9B9-4EF1-9EBE-7663CAF6B946}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PiXl", "PiXl\PiXl.csproj", "{49F5557F-DA75-4B40-8AF3-77F1B7F404C9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Glitch", "Glitch\Glitch.csproj", "{5D3AD59E-37D8-4CB2-B38D-97C26BAD29D7}"
@@ -25,10 +23,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{EC133628-E9B9-4EF1-9EBE-7663CAF6B946}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EC133628-E9B9-4EF1-9EBE-7663CAF6B946}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EC133628-E9B9-4EF1-9EBE-7663CAF6B946}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EC133628-E9B9-4EF1-9EBE-7663CAF6B946}.Release|Any CPU.Build.0 = Release|Any CPU
 		{49F5557F-DA75-4B40-8AF3-77F1B7F404C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{49F5557F-DA75-4B40-8AF3-77F1B7F404C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49F5557F-DA75-4B40-8AF3-77F1B7F404C9}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Reflection;
 using System.Threading;
@@ -7,14 +6,12 @@ using System.Windows.Forms;
 using CC_Functions.W32;
 using CC_Functions.W32.Hooks;
 using GlitchPayloads;
-using ScreenLib;
 
 namespace Glitch
 {
     public partial class RunGUI : Form
     {
-        public static bool payloadsEnabled = true;
-        private readonly List<Button> payloadButtons = new List<Button>();
+        private static bool _payloadsEnabled = true;
 
         public RunGUI()
         {
@@ -29,7 +26,6 @@ namespace Glitch
                     BackColor = Color.FromKnownColor(KnownColor.Control),
                     Tag = new object[] {s, GetFRunner(s.Item1, s.Item2), false}
                 };
-                payloadButtons.Add(btn);
                 btnPanel.Controls.Add(btn);
                 btn.Click += PayloadButtonClick;
             });
@@ -38,15 +34,15 @@ namespace Glitch
                 if (e.Key == Keys.Escape)
                     if (KeyboardReader.IsKeyDown(Keys.LShiftKey))
                     {
-                        payloadsEnabled = !payloadsEnabled;
+                        _payloadsEnabled = !_payloadsEnabled;
                         Text =
-                            $"CC24 Glitch - Payloads are {(payloadsEnabled ? "enabled" : "disabled")}. " +
+                            $"CC24 Glitch - Payloads are {(_payloadsEnabled ? "enabled" : "disabled")}. " +
                             "Press LShift+Esc to toggle";
                     }
             };
         }
 
-        public void PayloadButtonClick(object sender, EventArgs e)
+        private void PayloadButtonClick(object sender, EventArgs e)
         {
             Button btn = (Button) sender;
             object[] args = (object[]) btn.Tag;
@@ -72,13 +68,13 @@ namespace Glitch
             btn.Tag = args;
         }
 
-        public Thread GetFRunner(MethodInfo method, PayloadAttribute data)
+        private Thread GetFRunner(MethodInfo method, PayloadAttribute data)
         {
             return new Thread(() =>
             {
                 while (true)
                 {
-                    if (payloadsEnabled)
+                    if (_payloadsEnabled)
                         method.Invoke(null, new object[0]);
                     if (IsDisposed)
                         return;

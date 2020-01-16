@@ -7,8 +7,8 @@ using System.Media;
 using System.Threading;
 using System.Windows.Forms;
 using CC_Functions.W32;
+using CC_Functions.W32.DCDrawer;
 using ImageProcessor;
-using ScreenLib;
 
 namespace GlitchPayloads
 {
@@ -47,7 +47,7 @@ namespace GlitchPayloads
                 .InvertColor()
                 .Save(ms);
             ms.Position = 0;
-            using DCDrawer drawerBuffered = ScreenMan.GetDrawer();
+            using IDCDrawer drawerBuffered = ScreenMan.GetDrawer();
             drawerBuffered.Graphics.DrawImageUnscaled(Image.FromStream(ms), Point.Empty);
         }
 
@@ -61,7 +61,7 @@ namespace GlitchPayloads
                 .Resize(Size34)
                 .Save(ms);
             ms.Position = 0;
-            using DCDrawer dcdrawer = ScreenMan.GetDrawer();
+            using IDCDrawer dcdrawer = ScreenMan.GetDrawer();
             dcdrawer.Graphics.DrawImageUnscaled(tmp, Point.Empty);
             dcdrawer.Graphics.DrawImageUnscaled(Image.FromStream(ms), Point34);
         }
@@ -69,11 +69,11 @@ namespace GlitchPayloads
         [Payload(false, 220, 4000)]
         public static void PayloadReverseText()
         {
-            foreach (Wnd32 wnd in Wnd32.getAll())
+            foreach (Wnd32 wnd in Wnd32.All)
             {
-                string? tmp = wnd.title;
+                string? tmp = wnd.Title;
                 if (!string.IsNullOrWhiteSpace(tmp))
-                    wnd.title = string.Join("", tmp.ToCharArray().Reverse());
+                    wnd.Title = string.Join("", tmp.ToCharArray().Reverse());
             }
         }
 
@@ -116,7 +116,7 @@ namespace GlitchPayloads
         [Payload(true, 180, 800)]
         public static void PayloadDrawWarnings()
         {
-            using DCDrawer drawerBuffered = ScreenMan.GetDrawer(false);
+            using IDCDrawer drawerBuffered = ScreenMan.GetDrawer(false);
             drawerBuffered.Graphics.DrawIcon(WarningIcon, Common.Rnd.Next(XMaxWarning + 1),
                 Common.Rnd.Next(YMaxWarning + 1));
         }
@@ -125,7 +125,7 @@ namespace GlitchPayloads
         public static void PayloadDrawErrors()
         {
             Point tmp = Cursor.Position;
-            using DCDrawer drawerBuffered = ScreenMan.GetDrawer(false);
+            using IDCDrawer drawerBuffered = ScreenMan.GetDrawer(false);
             drawerBuffered.Graphics.DrawIcon(ErrorIcon, tmp.X - _halfErrorIcon.Width, tmp.Y - _halfErrorIcon.Height);
         }
 
@@ -147,7 +147,7 @@ namespace GlitchPayloads
                 .Crop(new Rectangle(new Point(Common.Rnd.Next(xMax), Common.Rnd.Next(yMax)), objSize))
                 .Save(ms);
             ms.Position = 0;
-            using DCDrawer drawerBuffered = ScreenMan.GetDrawer(false);
+            using IDCDrawer drawerBuffered = ScreenMan.GetDrawer(false);
             drawerBuffered.Graphics.DrawImageUnscaled(Image.FromStream(ms),
                 new Point(Common.Rnd.Next(xMax), Common.Rnd.Next(yMax)));
         }

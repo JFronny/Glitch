@@ -3,9 +3,9 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using CC_Functions.W32;
 using ImageProcessor;
 using ImageProcessor.Imaging;
-using ScreenLib;
 
 namespace AForge_Test
 {

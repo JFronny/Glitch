@@ -9,11 +9,11 @@ namespace GlitchPayloads
         [Payload(false, 50, 2000)]
         public static void PayloadWindowMove()
         {
-            Wnd32 tmp = Wnd32.foreground();
-            Rectangle pos = tmp.position;
+            Wnd32 tmp = Wnd32.Foreground;
+            Rectangle pos = tmp.Position;
             pos.X += Common.Rnd.Next(-2, 3);
             pos.Y += Common.Rnd.Next(-2, 3);
-            tmp.position = pos;
+            tmp.Position = pos;
         }
     }
 }

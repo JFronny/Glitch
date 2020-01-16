@@ -38,7 +38,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CC-Functions.W32, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\CC-Functions.W32.1.0.4\lib\CC-Functions.W32.dll</HintPath>
+      <HintPath>..\packages\CC-Functions.W32.1.0.5\lib\CC-Functions.W32.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ImageProcessor, Version=2.8.0.152, Culture=neutral, PublicKeyToken=null">

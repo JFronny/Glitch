@@ -35,7 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CC-Functions.W32, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\CC-Functions.W32.1.0.4\lib\CC-Functions.W32.dll</HintPath>
+      <HintPath>..\packages\CC-Functions.W32.1.0.5\lib\CC-Functions.W32.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -50,13 +50,13 @@
     <Compile Include="WatchDog.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\GlitchPayloads\GlitchPayloads.csproj">
       <Project>{9668a1f9-cf2e-4497-ab0d-dc96c1de475d}</Project>
       <Name>GlitchPayloads</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
