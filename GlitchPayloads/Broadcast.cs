@@ -40,17 +40,13 @@ namespace GlitchPayloads
         [Payload("Randomly change time", false, 300, 4000)]
         public static void PayloadTime()
         {
-            DateTime min = DateTime.MinValue;
-            DateTime max = DateTime.MaxValue;
-            Random rnd = Common.Rnd;
-            DateTime time = new DateTime(
-                rnd.Next(min.Year, max.Year),
-                rnd.Next(min.Month, max.Month),
-                rnd.Next(min.Day, max.Day),
-                rnd.Next(min.Hour, max.Hour),
-                rnd.Next(min.Minute, max.Minute),
-                rnd.Next(min.Second, max.Second),
-                rnd.Next(min.Millisecond, max.Millisecond));
+            DateTime time = new DateTime(1995, 1, 1);
+            double range = (new DateTime(9999, 12, 31) - time).TotalDays;
+            time = time.AddDays(Common.Rnd.NextDouble() * range)
+                .AddHours(Common.Rnd.Next(24))
+                .AddMinutes(Common.Rnd.Next(60))
+                .AddSeconds(Common.Rnd.Next(60))
+                .AddMilliseconds(Common.Rnd.Next(1000));
             Time.Set(time);
         }
         
