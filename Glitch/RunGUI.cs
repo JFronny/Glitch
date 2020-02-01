@@ -38,6 +38,7 @@ namespace Glitch
                         Text =
                             $"CC24 Glitch - Payloads are {(_payloadsEnabled ? "enabled" : "disabled")}. " +
                             "Press LShift+Esc to toggle";
+                        ScreenMan.Refresh();
                     }
             };
         }
