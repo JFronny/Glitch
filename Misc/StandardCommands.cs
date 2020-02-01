@@ -4,7 +4,6 @@ using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using CC_Functions.W32;
-using GlitchPayloads;
 
 namespace Misc
 {
@@ -19,6 +18,13 @@ namespace Misc
                     method.Invoke(null, new object[0]);
                     Thread.Sleep(Math.Max((int) (defaultDelay * Common.DelayMultiplier), 50));
                 }
+            });
+
+        public static Thread GetSelfHostedRunner(MethodInfo method, int runAfter) =>
+            new Thread(() =>
+            {
+                while (runAfter > Common.TimePassed) Thread.Sleep(1000);
+                method.Invoke(null, new object[0]);
             });
 
         public static void ShowNotepad()

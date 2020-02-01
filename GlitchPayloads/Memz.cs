@@ -8,7 +8,9 @@ using System.Threading;
 using System.Windows.Forms;
 using CC_Functions.W32;
 using CC_Functions.W32.DCDrawer;
+using GlitchPayloads.Properties;
 using ImageProcessor;
+using Misc;
 
 namespace GlitchPayloads
 {
@@ -23,13 +25,13 @@ namespace GlitchPayloads
         private static readonly int YMaxWarning = _bounds.Height - WarningIcon.Height;
 
         private static readonly string[] Sites =
-            GlitchPayloads.Sites.SiteString.Split(new[] {"\n", "\r"}, StringSplitOptions.RemoveEmptyEntries);
+            Resources.Sites.Split(new[] {"\n", "\r"}, StringSplitOptions.RemoveEmptyEntries);
 
         private static string _siteChoice = "";
         private static readonly Size Size34 = new Size((_bounds.Width / 4) * 3, (_bounds.Height / 4) * 3);
         private static readonly Point Point34 = new Point(_bounds.Width / 8, _bounds.Height / 8);
 
-        [Payload(true, 50, 200)]
+        [Payload("Random cursor movement", true, 50, 200)]
         public static void PayloadCursor()
         {
             Point tmp = Cursor.Position;
@@ -38,7 +40,7 @@ namespace GlitchPayloads
             Cursor.Position = tmp;
         }
 
-        [Payload(true, 150, 4000)]
+        [Payload("Invert Screen", true, 150, 4000)]
         public static void PayloadInvert()
         {
             using MemoryStream ms = new MemoryStream();
@@ -51,7 +53,7 @@ namespace GlitchPayloads
             drawerBuffered.Graphics.DrawImageUnscaled(Image.FromStream(ms), Point.Empty);
         }
 
-        [Payload(true, 280, 4000)]
+        [Payload("Tunnel effect", true, 280, 4000)]
         public static void PayloadTunnel()
         {
             using MemoryStream ms = new MemoryStream();
@@ -66,7 +68,7 @@ namespace GlitchPayloads
             dcdrawer.Graphics.DrawImageUnscaled(Image.FromStream(ms), Point34);
         }
 
-        [Payload(false, 220, 4000)]
+        [Payload("Reverse text", false, 220, 4000)]
         public static void PayloadReverseText()
         {
             foreach (Wnd32 wnd in Wnd32.All)
@@ -77,13 +79,13 @@ namespace GlitchPayloads
             }
         }
 
-        [Payload(false, 70, 4000)]
+        [Payload("Random keyboard input", false, 70, 4000)]
         public static void PayloadKeyboard()
         {
             SendKeys.SendWait($"{(char) Common.Rnd.Next(48, 123)}");
         }
 
-        [Payload(true, 120, 4000)]
+        [Payload("Random error sounds", true, 120, 4000)]
         public static void PayloadSound()
         {
             SystemSound[] sounds = typeof(SystemSounds).GetProperties()
@@ -92,7 +94,7 @@ namespace GlitchPayloads
             sounds[Common.Rnd.Next(sounds.Length)].Play();
         }
 
-        [Payload(false, 30, 4000)]
+        [Payload("Open random websites/programs", false, 30, 4000)]
         public static void PayloadExecute()
         {
             try
@@ -106,14 +108,14 @@ namespace GlitchPayloads
             }
         }
 
-        [Payload(true, 170, 12000)]
+        [Payload("Message boxes", true, 170, 12000)]
         public static void PayloadMessageBox()
         {
             new Thread(() => MessageBox.Show("Still using this computer?", "lol", MessageBoxButtons.OK,
                 MessageBoxIcon.Warning)).Start();
         }
 
-        [Payload(true, 180, 800)]
+        [Payload("Draw warning icons", true, 180, 800)]
         public static void PayloadDrawWarnings()
         {
             using IDCDrawer drawerBuffered = ScreenMan.GetDrawer(false);
@@ -121,7 +123,7 @@ namespace GlitchPayloads
                 Common.Rnd.Next(YMaxWarning + 1));
         }
 
-        [Payload(true, 180, 400)]
+        [Payload("Draw error icons", true, 180, 400)]
         public static void PayloadDrawErrors()
         {
             Point tmp = Cursor.Position;
@@ -129,13 +131,13 @@ namespace GlitchPayloads
             drawerBuffered.Graphics.DrawIcon(ErrorIcon, tmp.X - _halfErrorIcon.Width, tmp.Y - _halfErrorIcon.Height);
         }
 
-        [Payload(true, 305, 800)]
+        [Payload("Crazy Bus (Ear Rape)", true, 305, 800)]
         public static void PayloadCrazyBus()
         {
             Beep.BeepBeep(1000, Common.Rnd.Next(1000, 6000), (int) (800 * Common.DelayMultiplier));
         }
 
-        [Payload(true, 295, 4000)]
+        [Payload("Screen glitches", true, 295, 4000)]
         public static void PayloadScreenGlitches()
         {
             Size objSize = new Size(Common.Rnd.Next(100, 500), Common.Rnd.Next(100, 500));

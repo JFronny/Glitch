@@ -5,7 +5,7 @@ using System.Threading;
 using System.Windows.Forms;
 using CC_Functions.W32;
 using CC_Functions.W32.Hooks;
-using GlitchPayloads;
+using Misc;
 
 namespace Glitch
 {
@@ -20,7 +20,7 @@ namespace Glitch
             {
                 Button btn = new Button
                 {
-                    Text = s.Item1.GetPayloadName(),
+                    Text = s.Item2.Name,
                     Width = 200,
                     Height = 30,
                     BackColor = Color.FromKnownColor(KnownColor.Control),
@@ -46,12 +46,13 @@ namespace Glitch
         {
             Button btn = (Button) sender;
             object[] args = (object[]) btn.Tag;
-            Tuple<MethodInfo, PayloadAttribute> s = (Tuple<MethodInfo, PayloadAttribute>) args[0];
+            MethodInfo method = ((Tuple<MethodInfo, PayloadAttribute>) args[0]).Item1;
+            PayloadAttribute data = ((Tuple<MethodInfo, PayloadAttribute>) args[0]).Item2;
             Thread th = (Thread) args[1];
             if (th.IsAlive)
             {
                 th.Abort();
-                args[1] = GetFRunner(s.Item1, s.Item2);
+                args[1] = GetFRunner(method, data);
             }
             if ((bool) args[2])
             {
@@ -61,9 +62,14 @@ namespace Glitch
             }
             else
             {
-                th.Start();
-                args[2] = true;
-                btn.BackColor = Color.FromKnownColor(KnownColor.Highlight);
+                
+                if (data.IsSafe || MessageBox.Show("This payload is considered semi-harmful.\r\nThis means, it should be safe to use, but can still cause data loss or other things you might not want.\r\n\r\nIf you have productive data on your system or signed in to online accounts, it is recommended to run this payload inside a virtual machine in order to prevent potential data loss or changed things you might not want.\r\n\r\nDo you still want to enable it?", 
+                        "Glitch", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                {
+                    th.Start();
+                    args[2] = true;
+                    btn.BackColor = Color.FromKnownColor(KnownColor.Highlight);
+                }
             }
             btn.Tag = args;
         }

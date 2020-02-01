@@ -35,7 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CC-Functions.W32, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\CC-Functions.W32.1.0.5\lib\CC-Functions.W32.dll</HintPath>
+      <HintPath>..\packages\CC-Functions.W32.1.0.6\lib\CC-Functions.W32.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ImageProcessor, Version=2.8.0.152, Culture=neutral, PublicKeyToken=null">
@@ -55,12 +55,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ScreenMan\ScreenLib.csproj">
-      <Project>{ec133628-e9b9-4ef1-9ebe-7663caf6b946}</Project>
-      <Name>ScreenLib</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

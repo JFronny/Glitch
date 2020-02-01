@@ -41,14 +41,14 @@ namespace Glitch
             this.btnPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnPanel.Location = new System.Drawing.Point(0, 0);
             this.btnPanel.Name = "btnPanel";
-            this.btnPanel.Size = new System.Drawing.Size(721, 209);
+            this.btnPanel.Size = new System.Drawing.Size(721, 255);
             this.btnPanel.TabIndex = 0;
             // 
             // RunGUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(721, 209);
+            this.ClientSize = new System.Drawing.Size(721, 255);
             this.Controls.Add(this.btnPanel);
             this.Icon = ((System.Drawing.Icon) (resources.GetObject("$this.Icon")));
             this.Name = "RunGUI";
