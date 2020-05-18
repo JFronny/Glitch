@@ -19,8 +19,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Misc", "Misc\Misc.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FixLang", "FixLang\FixLang.csproj", "{9480E569-DAA4-46A0-B12B-CA9BE5D0CF10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.Compiler", "System.Compiler\System.Compiler.csproj", "{D7E16B38-3893-4EEF-847F-A3BE807E9546}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,10 +45,6 @@ Global
 		{9480E569-DAA4-46A0-B12B-CA9BE5D0CF10}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9480E569-DAA4-46A0-B12B-CA9BE5D0CF10}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9480E569-DAA4-46A0-B12B-CA9BE5D0CF10}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D7E16B38-3893-4EEF-847F-A3BE807E9546}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D7E16B38-3893-4EEF-847F-A3BE807E9546}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D7E16B38-3893-4EEF-847F-A3BE807E9546}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D7E16B38-3893-4EEF-847F-A3BE807E9546}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

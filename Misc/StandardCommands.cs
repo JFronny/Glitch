@@ -68,5 +68,7 @@ namespace Misc
         }
 
         public static MethodInfo GetMethodInfo(Action d) => d.Method;
+
+        public static bool ShouldRunWD(string[] args) => args.Length == 1 && args[0] == "wd";
     }
 }

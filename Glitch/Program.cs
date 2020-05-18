@@ -15,7 +15,7 @@ namespace Glitch
 
         public static void Main(string[] args)
         {
-            if (args.Length == 1 && args[0] == "wd")
+            if (StandardCommands.ShouldRunWD(args))
             {
                 WatchDog.Run();
                 return;

