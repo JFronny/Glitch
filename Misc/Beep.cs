@@ -8,10 +8,10 @@ namespace Misc
     {
         public static void BeepBeep(int amplitude, int frequency, int duration)
         {
-            double a = ((amplitude * Math.Pow(2, 15)) / 1000) - 1;
-            double deltaFt = (2 * Math.PI * frequency) / 44100.0;
+            double a = amplitude * Math.Pow(2, 15) / 1000 - 1;
+            double deltaFt = 2 * Math.PI * frequency / 44100.0;
 
-            int samples = (441 * duration) / 10;
+            int samples = 441 * duration / 10;
             int bytes = samples * 4;
             int[] hdr =
             {

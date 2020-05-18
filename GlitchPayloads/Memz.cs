@@ -28,7 +28,7 @@ namespace GlitchPayloads
             Resources.Sites.Split(new[] {"\n", "\r"}, StringSplitOptions.RemoveEmptyEntries);
 
         private static string _siteChoice = "";
-        private static readonly Size Size34 = new Size((_bounds.Width / 4) * 3, (_bounds.Height / 4) * 3);
+        private static readonly Size Size34 = new Size(_bounds.Width / 4 * 3, _bounds.Height / 4 * 3);
         private static readonly Point Point34 = new Point(_bounds.Width / 8, _bounds.Height / 8);
 
         [Payload("Random cursor movement", true, 50, 200)]
@@ -71,7 +71,8 @@ namespace GlitchPayloads
         [Payload("Reverse text", false, 220, 4000)]
         public static void PayloadReverseText()
         {
-            foreach (Wnd32 wnd in Wnd32.All)
+            Wnd32[] wnds = Wnd32.All;
+            foreach (Wnd32 wnd in wnds)
             {
                 string? tmp = wnd.Title;
                 if (!string.IsNullOrWhiteSpace(tmp))

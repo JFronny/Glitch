@@ -7,9 +7,9 @@ namespace Misc
     {
         public int DefaultDelay;
         public bool IsSafe;
+        public string Name;
         public int RunAfter;
         public bool SelfHosted;
-        public string Name;
 
         /// <summary>
         ///     Standard initializer

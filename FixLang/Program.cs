@@ -22,8 +22,9 @@ namespace FixLang
         }
 
         [DllImport("user32.dll")]
-        static extern bool PostMessage(int hhwnd, uint msg, IntPtr wparam, IntPtr lparam);
+        private static extern bool PostMessage(int hhwnd, uint msg, IntPtr wparam, IntPtr lparam);
+
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        static extern IntPtr LoadKeyboardLayout(string pwszKLID, uint Flags);
+        private static extern IntPtr LoadKeyboardLayout(string pwszKLID, uint Flags);
     }
 }

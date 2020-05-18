@@ -23,7 +23,6 @@ namespace Misc
                 int height = image.Height;
 
                 using (FastBitmap fastBitmap = new FastBitmap(newImage))
-                {
                     Parallel.For(0, height, y =>
                     {
                         for (int x = 0; x < width; x++)
@@ -36,7 +35,6 @@ namespace Misc
                             fastBitmap.SetPixel(x, y, Color.FromArgb(a, 255 - r, 255 - g, 255 - b));
                         }
                     });
-                }
 
                 image.Dispose();
                 image = newImage;

@@ -14,17 +14,29 @@ namespace Misc
             {
                 while (runAfter > Common.TimePassed) Thread.Sleep(1000);
                 while (true)
-                {
-                    method.Invoke(null, new object[0]);
-                    Thread.Sleep(Math.Max((int) (defaultDelay * Common.DelayMultiplier), 50));
-                }
+                    try
+                    {
+                        method.Invoke(null, new object[0]);
+                        Thread.Sleep(Math.Max((int) (defaultDelay * Common.DelayMultiplier), 50));
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
             });
 
         public static Thread GetSelfHostedRunner(MethodInfo method, int runAfter) =>
             new Thread(() =>
             {
                 while (runAfter > Common.TimePassed) Thread.Sleep(1000);
-                method.Invoke(null, new object[0]);
+                try
+                {
+                    method.Invoke(null, new object[0]);
+                }
+                catch
+                {
+                    // ignored
+                }
             });
 
         public static void ShowNotepad()

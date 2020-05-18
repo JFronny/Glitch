@@ -63,9 +63,9 @@ namespace Glitch
             }
             else
             {
-                
-                if (data.IsSafe || MessageBox.Show("This payload is considered semi-harmful.\r\nThis means, it should be safe to use, but can still cause data loss or other things you might not want.\r\n\r\nIf you have productive data on your system or signed in to online accounts, it is recommended to run this payload inside a virtual machine in order to prevent potential data loss or changed things you might not want.\r\n\r\nDo you still want to enable it?", 
-                        "Glitch", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                if (data.IsSafe || MessageBox.Show(
+                    "This payload is considered semi-harmful.\r\nThis means, it should be safe to use, but can still cause data loss or other things you might not want.\r\n\r\nIf you have productive data on your system or signed in to online accounts, it is recommended to run this payload inside a virtual machine in order to prevent potential data loss or changed things you might not want.\r\n\r\nDo you still want to enable it?",
+                    "Glitch", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                 {
                     th.Start();
                     args[2] = true;
@@ -80,13 +80,18 @@ namespace Glitch
             return new Thread(() =>
             {
                 while (true)
-                {
-                    if (_payloadsEnabled)
-                        method.Invoke(null, new object[0]);
-                    if (IsDisposed)
-                        return;
-                    Thread.Sleep(Math.Max(data.DefaultDelay / 4, 50));
-                }
+                    try
+                    {
+                        if (_payloadsEnabled)
+                            method.Invoke(null, new object[0]);
+                        if (IsDisposed)
+                            return;
+                        Thread.Sleep(Math.Max(data.DefaultDelay / 4, 50));
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
             });
         }
     }

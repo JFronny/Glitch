@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using ImageProcessor;
+﻿using ImageProcessor;
 
 namespace Misc
 {

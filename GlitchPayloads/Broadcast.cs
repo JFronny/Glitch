@@ -1,15 +1,17 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Drawing;
-using System.IO;
 using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
-using CC_Functions.Misc;
 using CC_Functions.W32;
 using CC_Functions.W32.DCDrawer;
+using CC_Functions.W32.Forms;
 using GlitchPayloads.Properties;
 using Misc;
+using FontStyle = System.Drawing.FontStyle;
+using Point = System.Drawing.Point;
+using Size = System.Drawing.Size;
 
 namespace GlitchPayloads
 {
@@ -25,7 +27,7 @@ namespace GlitchPayloads
             pos.Y += Common.Rnd.Next(-2, 3);
             tmp.Position = pos;
         }
-        
+
         [Payload("Draw text to desktop", false, 200, 4000)]
         public static void PayloadDesktopText()
         {
@@ -36,7 +38,7 @@ namespace GlitchPayloads
                 Common.Rnd.Next(Screen.PrimaryScreen.WorkingArea.Width),
                 Common.Rnd.Next(Screen.PrimaryScreen.WorkingArea.Height));
         }
-        
+
         [Payload("Randomly change time", false, 300, 4000)]
         public static void PayloadTime()
         {
@@ -49,19 +51,14 @@ namespace GlitchPayloads
                 .AddMilliseconds(Common.Rnd.Next(1000));
             Time.Set(time);
         }
-        
+
         [Payload("Draw Jumpscares", true, 300, 16000)]
         public static void PayloadJumpscare()
         {
             using (IDCDrawer drawer = ScreenMan.GetDrawer())
-            {
                 drawer.Graphics.DrawImage(Resources.jumpscare, Screen.PrimaryScreen.Bounds);
-            }
             Console.Beep(2000, 800);
-            using (IDCDrawer drawer = ScreenMan.GetDrawer())
-            {
-                drawer.Graphics.Clear(Color.Black);
-            }
+            using (IDCDrawer drawer = ScreenMan.GetDrawer()) drawer.Graphics.Clear(Color.Black);
         }
 
         [Payload("Eye on Desktop", false, 0, 0, true)]
@@ -79,28 +76,30 @@ namespace GlitchPayloads
         }
 
         private static PointF MakePoint(float xPercent, float yPercent) => new PointF(
-            (Screen.PrimaryScreen.Bounds.Width * xPercent) / 100,
-            (Screen.PrimaryScreen.Bounds.Height * yPercent) / 100);
+            Screen.PrimaryScreen.Bounds.Width * xPercent / 100,
+            Screen.PrimaryScreen.Bounds.Height * yPercent / 100);
 
         private static SizeF MakeSizeY(float xPercent, float yPercent) => new SizeF(
-            (Screen.PrimaryScreen.Bounds.Height * xPercent) / 100,
-            (Screen.PrimaryScreen.Bounds.Height * yPercent) / 100);
+            Screen.PrimaryScreen.Bounds.Height * xPercent / 100,
+            Screen.PrimaryScreen.Bounds.Height * yPercent / 100);
 
         [Payload("Show cool popup", false, 0, 0, true)]
         public static void PayloadBroadcastPopup()
         {
             new THEEYESTHEEYES().ShowDialog();
         }
-        
+
         public sealed class THEEYESTHEEYES : Form
         {
-            bool _pCl = true;
+            private bool _pCl = true;
+            private readonly Label label1;
+
             public THEEYESTHEEYES()
             {
                 label1 = new Label();
                 SuspendLayout();
                 label1.AutoSize = true;
-                label1.Font = new Font("Microsoft Sans Serif", 40F, System.Drawing.FontStyle.Regular, GraphicsUnit.Point, 0);
+                label1.Font = new Font("Microsoft Sans Serif", 40F, FontStyle.Regular, GraphicsUnit.Point, 0);
                 label1.ForeColor = Color.White;
                 label1.Location = new Point(0, 0);
                 label1.Name = "label1";
@@ -126,22 +125,23 @@ namespace GlitchPayloads
 
             private void THEEYESTHEEYES_Load(object sender, EventArgs e)
             {
-                label1.Top = (Height / 2) - (label1.Height / 2) - 20;
-                label1.Left = (Width / 2) - (label1.Width / 2);
-                BackColor = Color.FromArgb(SystemParameters.WindowGlassColor.A, SystemParameters.WindowGlassColor.R, SystemParameters.WindowGlassColor.G, SystemParameters.WindowGlassColor.B);
+                label1.Top = Height / 2 - label1.Height / 2 - 20;
+                label1.Left = Width / 2 - label1.Width / 2;
+                BackColor = Color.FromArgb(SystemParameters.WindowGlassColor.A, SystemParameters.WindowGlassColor.R,
+                    SystemParameters.WindowGlassColor.G, SystemParameters.WindowGlassColor.B);
                 RotatingIndicator p = new RotatingIndicator();
                 Controls.Add(p);
                 p.Size = new Size(50, 50);
-                p.Left = (Width / 2) - (p.Width / 2);
+                p.Left = Width / 2 - p.Width / 2;
                 p.Top = Height - 250;
                 new Thread(ThreadT).Start();
                 Cursor.Hide();
             }
 
-            void ThreadT()
+            private void ThreadT()
             {
                 Thread.Sleep(3000);
-                Invoke((MethodInvoker)(() =>
+                Invoke((MethodInvoker) (() =>
                 {
                     Cursor.Show();
                     _pCl = false;
@@ -150,7 +150,6 @@ namespace GlitchPayloads
             }
 
             private void THEEYESTHEEYES_OnClosing(object sender, CancelEventArgs e) => e.Cancel = _pCl;
-            private Label label1;
         }
     }
 }

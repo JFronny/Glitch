@@ -48,7 +48,8 @@ namespace Glitch
                     Console.WriteLine("Self-Hosted:");
                     Console.WriteLine("- " +
                                       string.Join($"{Environment.NewLine}- ",
-                                          selfHostedPayloads.Select(s => $"{s.Item2.Name} ({s.Item1.Name.Remove(0, 7)})")));
+                                          selfHostedPayloads.Select(
+                                              s => $"{s.Item2.Name} ({s.Item1.Name.Remove(0, 7)})")));
                     Console.WriteLine("");
                     Console.WriteLine(
                         "[run] also accepts \"wd\", indicating watchdogs should be used, \"np\" for showing the notepad prompt," +
