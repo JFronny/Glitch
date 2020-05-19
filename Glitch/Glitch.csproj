@@ -19,6 +19,7 @@
     <Content Include="Azael_Pixel.ico" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Brokenevent.ILStrip" Version="1.1.4" />
     <PackageReference Include="CC-Functions.W32" Version="1.1.7409.23118" />
     <PackageReference Include="ImageProcessor" Version="2.9.0" />
     <PackageReference Include="Lokad.ILPack" Version="0.1.4" />

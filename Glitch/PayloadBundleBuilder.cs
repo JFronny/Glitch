@@ -4,9 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
 using System.Threading;
-using GlitchPayloads;
+using BrokenEvent.ILStrip;
 using ILRepacking;
 using Misc;
 
@@ -39,7 +38,7 @@ namespace Glitch
                         Console.WriteLine($"- {s.Item2.Name}");
                         mpayloads.Add(new Tuple<MethodInfo, int, int>(s.Item1, s.Item2.RunAfter, s.Item2.DefaultDelay));
                     });
-            Console.WriteLine($"{Environment.NewLine}Self-Hosted:{Environment.NewLine}");
+            Console.WriteLine($"{Environment.NewLine}Self-Hosted:");
             Program.selfHostedPayloads.Where(s => payloads.Any(a =>
                     string.Equals(s.Item1.Name.Remove(0, 7), a, StringComparison.CurrentCultureIgnoreCase))).ToList()
                 .ForEach(
@@ -48,14 +47,14 @@ namespace Glitch
                         Console.WriteLine($"- {s.Item2.Name}");
                         mpayloads2.Add(new Tuple<MethodInfo, int>(s.Item1, s.Item2.RunAfter));
                     });
-            Console.WriteLine("Your binary will be saved as \"CustomGlitch.exe\"");
+            Console.WriteLine($"{Environment.NewLine}Your binary will be saved as \"CustomGlitch.exe\"");
             AssemblyName aName = new AssemblyName("CustomGlitch");
             AssemblyBuilder ab = AssemblyBuilder.DefineDynamicAssembly(aName, AssemblyBuilderAccess.Save);
             ModuleBuilder mb = ab.DefineDynamicModule(aName.Name, aName.Name + ".exe");
             TypeBuilder tb = mb.DefineType("Program", TypeAttributes.Public);
             MethodBuilder entry =
                 tb.DefineMethod("Main", MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.HideBySig, null, new[]{typeof(string[])});
-            ParameterBuilder bld = entry.DefineParameter(1, ParameterAttributes.None, "args");
+            entry.DefineParameter(1, ParameterAttributes.None, "args");
             ab.SetEntryPoint(entry);
             ILGenerator il = entry.GetILGenerator();
             Label retLab = il.DefineLabel();
@@ -77,7 +76,7 @@ namespace Glitch
                 il.MarkLabel(lab2);
             }
             il.EmitWriteLine($"Running Glitch Payload Bundle... (Config: {string.Join(", ", payloads)})");
-            il.Emit(OpCodes.Nop);
+            //il.Emit(OpCodes.Nop);
             if (showNp)
             {
                 il.EmitCall(OpCodes.Call, typeof(StandardCommands).GetMethod("ShowNotepad"), null);
@@ -88,7 +87,7 @@ namespace Glitch
                 il.Emit(OpCodes.Ldnull);
                 il.Emit(OpCodes.Ldftn, method.Item1);
                 il.Emit(OpCodes.Newobj, typeof(Action).GetConstructors()[0]);
-                il.EmitCall(OpCodes.Call, typeof(StandardCommands).GetMethod("GetMethodInfo"), null);
+                il.EmitCall(OpCodes.Call, typeof(StandardCommands).GetMethod("GetMethodInfo"), new[]{typeof(Action)});
                 il.Emit(OpCodes.Ldc_I4, skipDelay ? 0 : method.Item2);
                 il.Emit(OpCodes.Ldc_I4, method.Item3);
                 il.EmitCall(OpCodes.Call, typeof(StandardCommands).GetMethod("GetRunner"), null);
@@ -123,10 +122,19 @@ namespace Glitch
             tb.CreateType();
             ab.Save(aName.Name + ".exe");
             Assembly asm = Assembly.Load(File.ReadAllBytes("CustomGlitch.exe"));
-            ILRepack repack = new ILRepack(new RepackOptions(new[]{"/out:CustomGlitch.merged.exe", "CustomGlitch.exe"}.Concat(GetDependentFilesPass(asm, Environment.CurrentDirectory))));
+            ILRepack repack = new ILRepack(new RepackOptions(new[]{"/internalize", "/out:CustomGlitch.merged.exe", "CustomGlitch.exe"}.Concat(GetDependentFilesPass(asm, Environment.CurrentDirectory))));
             repack.Repack();
             File.Delete("CustomGlitch.exe");
-            File.Move("CustomGlitch.merged.exe", "CustomGlitch.exe");
+            ILStrip optimizer = new ILStrip("CustomGlitch.merged.exe");
+            optimizer.MakeInternal();
+            optimizer.ScanUsedClasses();
+            optimizer.ScanUnusedClasses();
+            optimizer.CleanupUnusedClasses();
+            optimizer.CleanupUnusedResources();
+            optimizer.CleanupUnusedReferences();
+            optimizer.Save("CustomGlitch.exe");
+            optimizer.Dispose();
+            File.Delete("CustomGlitch.merged.exe");
         }
         
         private static string[] GetDependentFilesPass(Assembly assembly, string poe)
