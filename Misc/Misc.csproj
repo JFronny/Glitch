@@ -8,7 +8,7 @@
     <TargetFrameworks>net48;netcoreapp3.1</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CC-Functions.W32" Version="1.1.7409.23118" />
+    <PackageReference Include="CC-Functions.W32" Version="1.1.7448.24408" />
     <PackageReference Include="ImageProcessor" Version="2.9.0" />
   </ItemGroup>
   <ItemGroup>
