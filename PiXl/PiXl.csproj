@@ -10,7 +10,7 @@
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CC-Functions.W32" Version="1.1.7448.24408" />
+    <PackageReference Include="CC-Functions.W32" Version="1.1.7450.31626" />
     <PackageReference Include="ImageProcessor" Version="2.9.0" />
   </ItemGroup>
 </Project>
