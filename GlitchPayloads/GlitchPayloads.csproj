@@ -20,7 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CC-Functions.Misc" Version="1.1.7468.32091" />
-    <PackageReference Include="CC-Functions.W32" Version="1.1.7468.32091" />
+    <PackageReference Include="CC-Functions.W32" Version="1.1.7479.21980" />
     <PackageReference Include="ImageProcessor" Version="2.9.0" />
     <PackageReference Include="Yandex.Translator" Version="2.0.0" />
   </ItemGroup>
