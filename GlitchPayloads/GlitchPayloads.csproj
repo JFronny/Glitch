@@ -19,7 +19,7 @@
     <ProjectReference Include="..\Misc\Misc.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CC-Functions.Misc" Version="1.1.7468.32091" />
+    <PackageReference Include="CC-Functions.Misc" Version="1.1.7483.29613" />
     <PackageReference Include="CC-Functions.W32" Version="1.1.7468.32091" />
     <PackageReference Include="ImageProcessor" Version="2.9.0" />
     <PackageReference Include="Yandex.Translator" Version="2.0.0" />
